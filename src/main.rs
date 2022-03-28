@@ -2,6 +2,7 @@ use std::io;
 
 use yamini::instructions::InstructionSet;
 use yamini::memory::Stack;
+use yamini::memory::Memory;
 use yamini::processor::Processor;
 
 fn main() {
@@ -14,9 +15,9 @@ fn main() {
 
     let mut stack = Stack::new();
 
-    let processor = Processor::new();
+    let mut memory = Memory::new();
+    memory.load_program(program);
 
-    for instruction in &program {
-        processor.execute(&instruction, &mut stack, &mut io::stdout());
-    }
+    let mut processor = Processor::new();
+    processor.execute_program(memory, &mut stack, &mut io::stdout());
 }

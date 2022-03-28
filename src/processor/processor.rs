@@ -1,15 +1,16 @@
 use std::io;
-
 use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
+use crate::memory::Memory;
 
 pub struct Processor {
+    pc: usize,
 }
 
 impl Processor {
     pub fn new() -> Processor {
         Processor {
-
+            pc: 0,
         }
     }
 
@@ -41,5 +42,17 @@ impl Processor {
                 };
             }
         }
+    }
+
+    pub fn execute_program(&mut self, memory: Memory, stack: &mut Stack, stdout: &mut dyn io::Write) {
+        loop {
+            let instruction = memory.get_value(self.pc);
+            self.execute(instruction, stack, stdout);
+            self.pc += 1;
+
+            if *instruction == InstructionSet::RET {
+                break;
+            }
+        }   
     }
 }
