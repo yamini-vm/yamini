@@ -1,6 +1,8 @@
+use crate::memory::InnerData;
+
 #[derive(Debug)]
 pub enum InstructionSet {
-    LOAD(i8),
+    LOAD(InnerData),
     ADD,
     SUB,
     MUL,

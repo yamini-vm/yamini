@@ -1,5 +1,7 @@
+use crate::memory::InnerData;
+
 pub struct Stack {
-    pub data: Vec<i8>,
+    pub data: Vec<InnerData>,
     pub head: usize,
 }
 
@@ -11,12 +13,12 @@ impl Stack {
         }
     }
 
-    pub fn push(&mut self, value: i8) {
+    pub fn push(&mut self, value: InnerData) {
         self.data.push(value);
         self.head += 1;
     }
 
-    pub fn pop(&mut self) -> Option<i8> {
+    pub fn pop(&mut self) -> Option<InnerData> {
         match self.data.pop() {
             Some(value) => {
                 self.head -= 1;
@@ -26,7 +28,7 @@ impl Stack {
         }
     }
 
-    pub fn data(&self) -> &[i8] {
+    pub fn data(&self) -> &[InnerData] {
         &self.data
     }
 
