@@ -27,4 +27,8 @@ impl Memory {
     pub fn load_program(&mut self, program: Vec<InstructionSet>) {
         self.data = program;
     }
+
+    pub fn data(&self) -> &Vec<InstructionSet> {
+        &self.data
+    }
 }

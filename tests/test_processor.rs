@@ -1,6 +1,7 @@
 use yamini::processor::Processor;
-use yamini::memory::Stack;
+use yamini::memory::{Stack, Memory};
 use yamini::instructions::InstructionSet;
+
 
 #[test]
 fn test_execute_load() {
@@ -29,6 +30,48 @@ fn test_execute_add() {
 }
 
 #[test]
+fn test_execute_sub() {
+    let mut stack = Stack::new();
+    stack.push(3);
+    stack.push(4);
+
+    let processor = Processor::new();
+
+    processor.execute(&InstructionSet::SUB, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[-1]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
+fn test_execute_mul() {
+    let mut stack = Stack::new();
+    stack.push(3);
+    stack.push(4);
+
+    let processor = Processor::new();
+
+    processor.execute(&InstructionSet::MUL, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[12]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
+fn test_execute_div() {
+    let mut stack = Stack::new();
+    stack.push(12);
+    stack.push(4);
+
+    let processor = Processor::new();
+
+    processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[3]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
 fn test_execute_ret() {
     let mut stack = Stack::new();
     stack.push(3);
@@ -43,4 +86,30 @@ fn test_execute_ret() {
     assert_eq!(stack.head(), 0);
 
     assert_eq!(String::from_utf8(stdout).unwrap(), "3\n");
+}
+
+#[test]
+fn test_execute_program() {
+    let mut program = Vec::new();
+
+    program.push(InstructionSet::LOAD(3));
+    program.push(InstructionSet::LOAD(4));
+    program.push(InstructionSet::MUL);
+    program.push(InstructionSet::RET);
+
+    let mut stack = Stack::new();
+
+    let mut memory = Memory::new();
+    memory.load_program(program);
+
+    let mut processor = Processor::new();
+
+    let mut stdout = Vec::new();
+
+    processor.execute_program(memory, &mut stack, &mut stdout);
+
+    assert_eq!(stack.data(), &[]);
+    assert_eq!(stack.head(), 0);
+
+    assert_eq!(String::from_utf8(stdout).unwrap(), "12\n");
 }
