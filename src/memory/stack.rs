@@ -1,5 +1,5 @@
 pub struct Stack {
-    pub data: Vec<u8>,
+    pub data: Vec<i8>,
     pub head: usize,
 }
 
@@ -11,12 +11,12 @@ impl Stack {
         }
     }
 
-    pub fn push(&mut self, value: u8) {
+    pub fn push(&mut self, value: i8) {
         self.data.push(value);
         self.head += 1;
     }
 
-    pub fn pop(&mut self) -> Option<u8> {
+    pub fn pop(&mut self) -> Option<i8> {
         match self.data.pop() {
             Some(value) => {
                 self.head -= 1;
@@ -26,7 +26,7 @@ impl Stack {
         }
     }
 
-    pub fn data(&self) -> &[u8] {
+    pub fn data(&self) -> &[i8] {
         &self.data
     }
 

@@ -1,7 +1,10 @@
 #[derive(Debug)]
 pub enum InstructionSet {
-    LOAD(u8),
+    LOAD(i8),
     ADD,
+    SUB,
+    MUL,
+    DIV,
     RET,
 }
 
@@ -10,6 +13,9 @@ impl PartialEq for InstructionSet {
         match (self, other) {
             (InstructionSet::LOAD(a), InstructionSet::LOAD(b)) => a == b,
             (InstructionSet::ADD, InstructionSet::ADD) => true,
+            (InstructionSet::SUB, InstructionSet::SUB) => true,
+            (InstructionSet::MUL, InstructionSet::MUL) => true,
+            (InstructionSet::DIV, InstructionSet::DIV) => true,
             (InstructionSet::RET, InstructionSet::RET) => true,
             _ => false,
         }

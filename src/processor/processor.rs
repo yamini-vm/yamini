@@ -20,16 +20,52 @@ impl Processor {
                 stack.push(*value);
             },
             InstructionSet::ADD => {
-                let a = match stack.pop() {
+                let b = match stack.pop() {
                     Some(value) => value,
                     None => panic!("Stack is empty!"),
                 };
-                let b = match stack.pop() {
+                let a = match stack.pop() {
                     Some(value) => value,
                     None => panic!("Stack is empty!"),
                 };
 
                 stack.push(a + b);
+            },
+            InstructionSet::SUB => {
+                let b = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+                let a = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                stack.push(a - b);
+            },
+            InstructionSet::MUL => {
+                let b = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+                let a = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                stack.push(a * b);
+            },
+            InstructionSet::DIV => {
+                let b = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+                let a = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                stack.push(a / b);
             },
             InstructionSet::RET => {
                 if let Some(value) = stack.pop() {
