@@ -25,17 +25,6 @@ impl PartialEq for InstructionSet {
 }
 
 impl InstructionSet {
-    pub fn to_int(self) -> u8 {
-        match self {
-            InstructionSet::LOAD(_) => 0,
-            InstructionSet::ADD => 1,
-            InstructionSet::SUB => 2,
-            InstructionSet::MUL => 3,
-            InstructionSet::DIV => 4,
-            InstructionSet::RET => 5,
-        }
-    }
-
     pub fn from_int(value: u8, arg: Option<InnerData>) -> Self {
         match value {
             0 => {
