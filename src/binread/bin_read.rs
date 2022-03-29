@@ -5,23 +5,14 @@ use crate::instructions::InstructionSet;
 use crate::memory::InnerData;
 
 
-fn read_file_line_by_line(filepath: &str) -> Result<Vec<isize>, Box<dyn std::error::Error>> {
+fn read_file_line_by_line(filepath: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let file = File::open(filepath)?;
-    let reader = BufReader::new(file);
-    let mut file_lines = Vec::new();
-    let mut dec_val;
+    let mut reader = BufReader::new(file);
+    let mut file_bytes = Vec::new();
 
-    for line in reader.lines() {
-        match line {
-            Ok(line) => {
-                dec_val = isize::from_str_radix(&line, 2)?;
-                file_lines.push(dec_val)
-            },
-            Err(e) => println!("Error: {}", e),
-        }
-    }
+    reader.read_to_end(&mut file_bytes)?;
 
-    Ok(file_lines)
+    Ok(file_bytes)
 }
 
 pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
