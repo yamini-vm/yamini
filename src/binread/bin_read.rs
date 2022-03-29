@@ -20,9 +20,9 @@ fn read_file_line_by_line(filepath: &str) -> Result<Vec<String>, Box<dyn std::er
     Ok(file_lines)
 }
 
-pub fn read_from_file(file_name: &str) -> Vec<InstructionSet> {
+pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     let mut buffer = Vec::new();
-    match read_file_line_by_line(file_name) {
+    match read_file_line_by_line(filepath) {
         Ok(lines) => {
             buffer = lines;
         },

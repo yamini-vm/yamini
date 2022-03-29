@@ -1,4 +1,5 @@
 use std::io;
+use std::env;
 
 use yamini::memory::Stack;
 use yamini::memory::Memory;
@@ -6,7 +7,15 @@ use yamini::processor::Processor;
 use yamini::binread::read_from_file;
 
 fn main() {
-    let program = read_from_file("calc.bin");
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: {} <filepath>", args[0]);
+        return;
+    }
+
+    let filepath = &args[1];
+
+    let program = read_from_file(filepath);
 
     let mut stack = Stack::new();
 
