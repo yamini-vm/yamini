@@ -8,6 +8,7 @@ pub enum InstructionSet {
     MUL,
     DIV,
     RET,
+    MOD,
 }
 
 impl PartialEq for InstructionSet {
@@ -19,6 +20,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::MUL, InstructionSet::MUL) => true,
             (InstructionSet::DIV, InstructionSet::DIV) => true,
             (InstructionSet::RET, InstructionSet::RET) => true,
+            (InstructionSet::MOD, InstructionSet::MOD) => true,
             _ => false,
         }
     }
@@ -38,6 +40,7 @@ impl InstructionSet {
             3 => InstructionSet::MUL,
             4 => InstructionSet::DIV,
             5 => InstructionSet::RET,
+            6 => InstructionSet::MOD,
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }

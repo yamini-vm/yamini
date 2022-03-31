@@ -76,6 +76,18 @@ impl Processor {
                 } else {
                     panic!("Stack is empty!")
                 };
+            },
+            InstructionSet::MOD => {
+                let b = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+                let a = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                stack.push(a % b);
             }
         }
     }
