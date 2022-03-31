@@ -89,6 +89,7 @@ impl Processor {
 
                 stack.push(a % b);
             }
+            InstructionSet::LOADLABEL => {},
         }
     }
 
