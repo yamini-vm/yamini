@@ -89,6 +89,20 @@ fn test_execute_ret() {
 }
 
 #[test]
+fn test_execute_mod() {
+    let mut stack = Stack::new();
+    stack.push(12);
+    stack.push(5);
+
+    let processor = Processor::new();
+
+    processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[2]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 
