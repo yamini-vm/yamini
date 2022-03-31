@@ -103,6 +103,17 @@ fn test_execute_mod() {
 }
 
 #[test]
+fn test_execute_loadlable() {
+    let mut stack = Stack::new();
+    let processor = Processor::new();
+
+    processor.execute(&InstructionSet::LOADLABEL, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[]);
+    assert_eq!(stack.head(), 0);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 
