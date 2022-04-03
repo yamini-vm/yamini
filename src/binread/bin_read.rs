@@ -24,21 +24,28 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
         Err(e) => println!("Error: {}", e),
     }
 
+    let instruction_with_arg = vec![
+        0, // LOAD
+        8, // JMP
+    ];
+
     let mut program = Vec::new();
     let mut is_reading_arg = false;
+    let mut current_arg_instruction = 0;
     let mut arg: InnerData;
 
     for byte in buffer {
         if is_reading_arg {
             arg = byte as InnerData;
-            let instruction = InstructionSet::from_int(0, Some(arg));
+            let instruction = InstructionSet::from_int(current_arg_instruction, Some(arg));
             program.push(instruction);
             is_reading_arg = false;
             continue;
         }
 
-        if byte as InnerData == 0 {
+        if instruction_with_arg.contains(&byte) {
             is_reading_arg = true;
+            current_arg_instruction = byte;
         } else {
             let instruction = InstructionSet::from_int(byte as u8, None);
             program.push(instruction);

@@ -10,6 +10,7 @@ pub enum InstructionSet {
     RET,
     MOD,
     LOADLABEL,
+    JMP(InnerData),
 }
 
 impl PartialEq for InstructionSet {
@@ -23,6 +24,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::RET, InstructionSet::RET) => true,
             (InstructionSet::MOD, InstructionSet::MOD) => true,
             (InstructionSet::LOADLABEL, InstructionSet::LOADLABEL) => true,
+            (InstructionSet::JMP(a), InstructionSet::JMP(b)) => a == b,
             _ => false,
         }
     }
@@ -44,6 +46,12 @@ impl InstructionSet {
             5 => InstructionSet::RET,
             6 => InstructionSet::MOD,
             7 => InstructionSet::LOADLABEL,
+            8 => {
+                match arg {
+                    Some(arg) => InstructionSet::JMP(arg),
+                    None => panic!("InstructionSet::JMP: arg is None"),
+                }
+            },
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }
