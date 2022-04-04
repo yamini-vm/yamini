@@ -3,9 +3,38 @@ use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{Memory, InnerData};
 
+
+struct FlagRegister {
+    zero: bool,
+    negative: bool,
+    unused_3: bool,
+    unused_4: bool,
+    unused_5: bool,
+    unused_6: bool,
+    unused_7: bool,
+    unused_8: bool,
+}
+
+impl FlagRegister {
+    fn new() -> FlagRegister {
+        FlagRegister {
+            zero: false,
+            negative: false,
+            unused_3: false,
+            unused_4: false,
+            unused_5: false,
+            unused_6: false,
+            unused_7: false,
+            unused_8: false,
+        }
+    }
+}
+
+
 pub struct Processor {
     pc: usize,
     registers: [InnerData; 10],
+    flag_register: FlagRegister,
 }
 
 impl Processor {
@@ -13,6 +42,7 @@ impl Processor {
         Processor {
             pc: 0,
             registers: [0; 10],
+            flag_register: FlagRegister::new(),
         }
     }
 
