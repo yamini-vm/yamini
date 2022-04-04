@@ -125,6 +125,17 @@ fn test_execute_jmp() {
 }
 
 #[test]
+fn test_execute_loadregister() {
+    let mut stack = Stack::new();
+    let mut processor = Processor::new();
+
+    processor.execute(&InstructionSet::LOADREGISTER(2), &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[0]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 

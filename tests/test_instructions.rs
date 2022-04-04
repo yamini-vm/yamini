@@ -28,6 +28,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::JMP(3);
     assert_eq!(instruction, InstructionSet::JMP(3));
+
+    let instruction = InstructionSet::LOADREGISTER(3);
+    assert_eq!(instruction, InstructionSet::LOADREGISTER(3));
 }
 
 #[test]
@@ -58,4 +61,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(8, Some(2));
     assert_eq!(instruction, InstructionSet::JMP(2));
+
+    let instruction = InstructionSet::from_int(9, Some(2));
+    assert_eq!(instruction, InstructionSet::LOADREGISTER(2));
 }
