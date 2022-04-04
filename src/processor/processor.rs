@@ -4,6 +4,7 @@ use crate::memory::stack::Stack;
 use crate::memory::{Memory, InnerData};
 
 
+#[allow(dead_code)]
 struct FlagRegister {
     zero: bool,
     negative: bool,
@@ -31,6 +32,7 @@ impl FlagRegister {
 }
 
 
+#[allow(dead_code)]
 pub struct Processor {
     pc: usize,
     registers: [InnerData; 10],
@@ -132,6 +134,16 @@ impl Processor {
 
                 stack.push(self.registers[*register_idx as usize]);
             },
+            InstructionSet::POPREGISTER(register_idx) => {
+                if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
+                    panic!("Register index out of bounds!");
+                }
+
+                self.registers[*register_idx as usize] = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+            }
         }
     }
 
