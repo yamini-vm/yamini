@@ -1,16 +1,18 @@
 use std::io;
 use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
-use crate::memory::Memory;
+use crate::memory::{Memory, InnerData};
 
 pub struct Processor {
     pc: usize,
+    registers: [InnerData; 10],
 }
 
 impl Processor {
     pub fn new() -> Processor {
         Processor {
             pc: 0,
+            registers: [0; 10],
         }
     }
 
@@ -92,6 +94,13 @@ impl Processor {
             InstructionSet::LOADLABEL => {},
             InstructionSet::JMP(value) => {
                 self.pc = *value as usize;
+            },
+            InstructionSet::LOADREGISTER(register_idx) => {
+                if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
+                    panic!("Register index out of bounds!");
+                }
+
+                stack.push(self.registers[*register_idx as usize]);
             },
         }
     }
