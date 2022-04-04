@@ -25,6 +25,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::LOADLABEL;
     assert_eq!(instruction, InstructionSet::LOADLABEL);
+
+    let instruction = InstructionSet::JMP(3);
+    assert_eq!(instruction, InstructionSet::JMP(3));
 }
 
 #[test]
@@ -52,4 +55,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(7, None);
     assert_eq!(instruction, InstructionSet::LOADLABEL);
+
+    let instruction = InstructionSet::from_int(8, Some(2));
+    assert_eq!(instruction, InstructionSet::JMP(2));
 }

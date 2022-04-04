@@ -7,7 +7,7 @@ use yamini::instructions::InstructionSet;
 fn test_execute_load() {
     let mut stack = Stack::new();
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::LOAD(3), &mut stack, &mut Vec::new());
 
@@ -21,7 +21,7 @@ fn test_execute_add() {
     stack.push(3);
     stack.push(4);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::ADD, &mut stack, &mut Vec::new());
 
@@ -35,7 +35,7 @@ fn test_execute_sub() {
     stack.push(3);
     stack.push(4);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::SUB, &mut stack, &mut Vec::new());
 
@@ -49,7 +49,7 @@ fn test_execute_mul() {
     stack.push(3);
     stack.push(4);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::MUL, &mut stack, &mut Vec::new());
 
@@ -63,7 +63,7 @@ fn test_execute_div() {
     stack.push(12);
     stack.push(4);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
 
@@ -76,7 +76,7 @@ fn test_execute_ret() {
     let mut stack = Stack::new();
     stack.push(3);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     let mut stdout = Vec::new();
 
@@ -94,7 +94,7 @@ fn test_execute_mod() {
     stack.push(12);
     stack.push(5);
 
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
 
@@ -103,11 +103,22 @@ fn test_execute_mod() {
 }
 
 #[test]
-fn test_execute_loadlable() {
+fn test_execute_loadlabel() {
     let mut stack = Stack::new();
-    let processor = Processor::new();
+    let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::LOADLABEL, &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[]);
+    assert_eq!(stack.head(), 0);
+}
+
+#[test]
+fn test_execute_jmp() {
+    let mut stack = Stack::new();
+    let mut processor = Processor::new();
+
+    processor.execute(&InstructionSet::JMP(2), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);

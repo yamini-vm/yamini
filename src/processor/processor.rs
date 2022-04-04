@@ -14,7 +14,7 @@ impl Processor {
         }
     }
 
-    pub fn execute(&self, instruction: &InstructionSet, stack: &mut Stack, stdout: &mut dyn io::Write) {
+    pub fn execute(&mut self, instruction: &InstructionSet, stack: &mut Stack, stdout: &mut dyn io::Write) {
         match instruction {
             InstructionSet::LOAD(value) => {
                 stack.push(*value);
@@ -90,6 +90,9 @@ impl Processor {
                 stack.push(a % b);
             }
             InstructionSet::LOADLABEL => {},
+            InstructionSet::JMP(value) => {
+                self.pc = *value as usize;
+            },
         }
     }
 
@@ -97,6 +100,7 @@ impl Processor {
         loop {
             let instruction = memory.get_value(self.pc);
             self.execute(instruction, stack, stdout);
+
             self.pc += 1;
 
             if *instruction == InstructionSet::RET {
