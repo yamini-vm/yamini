@@ -34,6 +34,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::POPREGISTER(2);
     assert_eq!(instruction, InstructionSet::POPREGISTER(2));
+
+    let instruction = InstructionSet::JZ(2);
+    assert_eq!(instruction, InstructionSet::JZ(2));
 }
 
 #[test]
@@ -70,4 +73,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(10, Some(2));
     assert_eq!(instruction, InstructionSet::POPREGISTER(2));
+
+    let instruction = InstructionSet::from_int(11, Some(2));
+    assert_eq!(instruction, InstructionSet::JZ(2));
 }
