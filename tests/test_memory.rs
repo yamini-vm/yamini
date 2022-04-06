@@ -23,6 +23,15 @@ fn test_stack_pop() {
 }
 
 #[test]
+fn test_stack_top() {
+    let mut stack = Stack::new();
+    stack.push(3);
+    stack.push(4);
+
+    assert_eq!(*stack.top(), 4);
+}
+
+#[test]
 fn test_memory_get_value() {
     let mut memory = Memory::new();
     memory.add_value(InstructionSet::LOAD(3));

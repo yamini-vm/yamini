@@ -148,6 +148,17 @@ fn test_execute_popregister() {
 }
 
 #[test]
+fn test_execute_jz() {
+    let mut stack = Stack::new();
+    let mut processor = Processor::new();
+
+    processor.execute(&InstructionSet::JZ(2), &mut stack, &mut Vec::new());
+
+    assert_eq!(stack.data(), &[]);
+    assert_eq!(stack.head(), 0);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 

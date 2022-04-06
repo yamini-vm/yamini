@@ -29,6 +29,7 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
         8, // JMP
         9, // LOADREGISTER
         10, // POPREGISTER
+        11, // JZ
     ];
 
     let mut program = Vec::new();
