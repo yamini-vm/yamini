@@ -35,4 +35,8 @@ impl Stack {
     pub fn head(&self) -> usize {
         self.head
     }
+
+    pub fn top(&self) -> &InnerData {
+        self.data.get(self.head - 1).unwrap()
+    }
 }

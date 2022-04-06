@@ -124,8 +124,8 @@ impl Processor {
                 stack.push(a % b);
             }
             InstructionSet::LOADLABEL => {},
-            InstructionSet::JMP(value) => {
-                self.pc = *value as usize;
+            InstructionSet::JMP(label) => {
+                self.pc = *label as usize;
             },
             InstructionSet::LOADREGISTER(register_idx) => {
                 if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
@@ -143,7 +143,18 @@ impl Processor {
                     Some(value) => value,
                     None => panic!("Stack is empty!"),
                 };
+            },
+            InstructionSet::JZ(label) => {
+                if self.flag_register.zero {
+                    self.pc = *label as usize;
+                }
             }
+        }
+
+        if stack.data().len() > 0 && *stack.top() == 0 {
+            self.flag_register.zero = true;
+        } else {
+            self.flag_register.zero = false;
         }
     }
 
