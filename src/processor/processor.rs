@@ -148,13 +148,21 @@ impl Processor {
                 if self.flag_register.zero {
                     self.pc = *label as usize;
                 }
-            }
+            },
+            InstructionSet::JN(label) => {
+                if self.flag_register.negative {
+                    self.pc = *label as usize;
+                }
+            },
         }
 
         if stack.data().len() > 0 && *stack.top() == 0 {
             self.flag_register.zero = true;
+        } else if stack.data.len() > 0 && *stack.top() < 0 {
+            self.flag_register.negative = true;
         } else {
             self.flag_register.zero = false;
+            self.flag_register.negative = false;
         }
     }
 

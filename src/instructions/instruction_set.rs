@@ -14,6 +14,7 @@ pub enum InstructionSet {
     LOADREGISTER(InnerData),
     POPREGISTER(InnerData),
     JZ(InnerData),
+    JN(InnerData),
 }
 
 impl PartialEq for InstructionSet {
@@ -31,6 +32,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::LOADREGISTER(a), InstructionSet::LOADREGISTER(b)) => a == b,
             (InstructionSet::POPREGISTER(a), InstructionSet::POPREGISTER(b)) => a == b,
             (InstructionSet::JZ(a), InstructionSet::JZ(b)) => a == b,
+            (InstructionSet::JN(a), InstructionSet::JN(b)) => a == b,
             _ => false,
         }
     }
@@ -74,6 +76,12 @@ impl InstructionSet {
                 match arg {
                     Some(arg) => InstructionSet::JZ(arg),
                     None => panic!("InstructionSet::JZ: arg is None"),
+                }
+            },
+            12 => {
+                match arg {
+                    Some(arg) => InstructionSet::JN(arg),
+                    None => panic!("InstructionSet::JN: arg is None"),
                 }
             },
             _ => panic!("Invalid instruction set value: {}", value),
