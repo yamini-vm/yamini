@@ -9,7 +9,7 @@ fn test_execute_load() {
 
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::LOAD(3), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::LOAD(3, 200), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[3]);
     assert_eq!(stack.head(), 1);
@@ -107,7 +107,7 @@ fn test_execute_loadlabel() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::LOADLABEL, &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::LABEL, &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -125,23 +125,12 @@ fn test_execute_jmp() {
 }
 
 #[test]
-fn test_execute_loadregister() {
-    let mut stack = Stack::new();
-    let mut processor = Processor::new();
-
-    processor.execute(&InstructionSet::LOADREGISTER(2), &mut stack, &mut Vec::new());
-
-    assert_eq!(stack.data(), &[0]);
-    assert_eq!(stack.head(), 1);
-}
-
-#[test]
 fn test_execute_popregister() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::LOAD(2), &mut stack, &mut Vec::new());
-    processor.execute(&InstructionSet::POPREGISTER(2), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::LOAD(2, 100), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::POP(2), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -173,8 +162,8 @@ fn test_execute_jn() {
 fn test_execute_program() {
     let mut program = Vec::new();
 
-    program.push(InstructionSet::LOAD(3));
-    program.push(InstructionSet::LOAD(4));
+    program.push(InstructionSet::LOAD(3, 200));
+    program.push(InstructionSet::LOAD(4, 200));
     program.push(InstructionSet::MUL);
     program.push(InstructionSet::RET);
 
