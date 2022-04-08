@@ -11,7 +11,7 @@ pub enum InstructionSet {
     MOD,
     LABEL,
     JMP(InnerData),
-    POP(InnerData),
+    POP(InnerData, u8),
     JZ(InnerData),
     JN(InnerData),
 }
@@ -28,7 +28,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::MOD, InstructionSet::MOD) => true,
             (InstructionSet::LABEL, InstructionSet::LABEL) => true,
             (InstructionSet::JMP(a), InstructionSet::JMP(b)) => a == b,
-            (InstructionSet::POP(a), InstructionSet::POP(b)) => a == b,
+            (InstructionSet::POP(a, b), InstructionSet::POP(c, d)) => a == c && b == d,
             (InstructionSet::JZ(a), InstructionSet::JZ(b)) => a == b,
             (InstructionSet::JN(a), InstructionSet::JN(b)) => a == b,
             _ => false,
@@ -66,10 +66,17 @@ impl InstructionSet {
                 }
             },
             9 => {
-                match arg {
-                    Some(arg) => InstructionSet::POP(arg),
-                    None => panic!("InstructionSet::POP: arg is None"),
-                }
+                let first_arg = match arg {
+                    Some(arg) => arg,
+                    None => panic!("InstructionSet::LOAD: arg is None"),
+                };
+
+                let second_arg = match arg1 {
+                    Some(arg) => arg,
+                    None => panic!("InstructionSet::LOAD: arg1 is None"),
+                };
+
+                InstructionSet::POP(first_arg, second_arg as u8)
             },
             10 => {
                 match arg {

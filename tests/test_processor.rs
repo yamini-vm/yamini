@@ -130,7 +130,7 @@ fn test_execute_popregister() {
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::LOAD(2, 100), &mut stack, &mut Vec::new());
-    processor.execute(&InstructionSet::POP(2), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::POP(2, 100), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);

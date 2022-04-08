@@ -137,15 +137,17 @@ impl Processor {
             InstructionSet::JMP(label) => {
                 self.pc = *label as usize;
             },
-            InstructionSet::POP(register_idx) => {
-                if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
-                    panic!("Register index out of bounds!");
-                }
+            InstructionSet::POP(register_idx, offset) => {
+                if offset == &REGISTER_OFFSET {
+                    if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
+                        panic!("Register index out of bounds!");
+                    }
 
-                self.registers[*register_idx as usize] = match stack.pop() {
-                    Some(value) => value,
-                    None => panic!("Stack is empty!"),
-                };
+                    self.registers[*register_idx as usize] = match stack.pop() {
+                        Some(value) => value,
+                        None => panic!("Stack is empty!"),
+                    };
+                }
             },
             InstructionSet::JZ(label) => {
                 if self.flag_register.zero {

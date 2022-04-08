@@ -29,8 +29,8 @@ fn test_instruction_equality() {
     let instruction = InstructionSet::JMP(3);
     assert_eq!(instruction, InstructionSet::JMP(3));
 
-    let instruction = InstructionSet::POP(2);
-    assert_eq!(instruction, InstructionSet::POP(2));
+    let instruction = InstructionSet::POP(2, 100);
+    assert_eq!(instruction, InstructionSet::POP(2, 100));
 
     let instruction = InstructionSet::JZ(2);
     assert_eq!(instruction, InstructionSet::JZ(2));
@@ -68,8 +68,8 @@ fn test_instruction_from_int() {
     let instruction = InstructionSet::from_int(8, Some(2), None);
     assert_eq!(instruction, InstructionSet::JMP(2));
 
-    let instruction = InstructionSet::from_int(9, Some(2), None);
-    assert_eq!(instruction, InstructionSet::POP(2));
+    let instruction = InstructionSet::from_int(9, Some(2), Some(100));
+    assert_eq!(instruction, InstructionSet::POP(2, 100));
 
     let instruction = InstructionSet::from_int(10, Some(2), None);
     assert_eq!(instruction, InstructionSet::JZ(2));

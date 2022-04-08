@@ -33,13 +33,13 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
 
     let instruction_with_arg = vec![
         8, // JMP
-        9, // POP
         10, // JZ
         11, // JN
     ];
 
     let instruction_with_two_args = vec![
         0, // LOAD
+        9, // POP
     ];
 
     let mut program = Vec::new();
