@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
@@ -10,6 +11,7 @@ enum State {
     ReadTwoArgs,
     GenInstruction,
     ReadInstruction,
+    ReadObject,
 }
 
 fn read_file_line_by_line(filepath: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
@@ -42,39 +44,42 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
         9, // POP
     ];
 
+    let mut object_instructions_with_end = HashMap::new();
+    object_instructions_with_end.insert(12, 13); // 12 = STARTSTR, 13 = ENDSTR
+
     let mut program = Vec::new();
     let mut state = State::ReadInstruction;
 
-    let mut instruction_stack = Vec::new();
-    let mut arg_stack = Vec::new();
+    let mut instruction_stack: Vec<u8> = Vec::new();
+    let mut arg_stack: Vec<InnerData> = Vec::new();
 
-    let mut instruction;
+    let mut instruction: u8;
     let mut arg;
 
     let mut i = 0;
     while i < buffer.len() {
         match state {
             State::ReadOneArg => {
-                arg = buffer[i] as InnerData;
-                arg_stack.push(arg);
+                arg = buffer[i] as i8;
+                arg_stack.push(InnerData::INT(arg));
 
                 state = State::GenInstruction;
                 i += 1;
             },
             State::ReadTwoArgs => {
-                arg = buffer[i] as InnerData;
-                arg_stack.push(arg);
+                arg = buffer[i] as i8;
+                arg_stack.push(InnerData::INT(arg));
 
                 i += 1;
-                arg = buffer[i] as InnerData;
-                arg_stack.push(arg);
+                arg = buffer[i] as i8;
+                arg_stack.push(InnerData::INT(arg));
 
                 state = State::GenInstruction;
                 i += 1;
             },
             State::GenInstruction => {
                 instruction = match instruction_stack.pop() {
-                    Some(instruction) => instruction as i8,
+                    Some(instruction) => instruction as u8,
                     None => panic!("Instruction stack is empty"),
                 };
 
@@ -87,18 +92,40 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
                 state = State::ReadInstruction;
             },
             State::ReadInstruction => {
-                instruction = buffer[i] as InnerData;
+                instruction = buffer[i] as u8;
                 instruction_stack.push(instruction);
 
                 if instruction_with_arg.contains(&instruction) {
                     state = State::ReadOneArg;
                 } else if instruction_with_two_args.contains(&instruction) {
-                    state = State::ReadTwoArgs;
-                } else {
+                    if object_instructions_with_end.contains_key(&buffer[i + 2]) {
+                        state = State::ReadObject;
+                    } else {
+                        state = State::ReadTwoArgs;
+                    }
+                } 
+                else {
                     state = State::GenInstruction;
                 }
 
                 i += 1;
+            },
+            State::ReadObject => {
+                let mut j = i + 2;
+                let mut string_arg = String::new();
+
+                arg_stack.push(InnerData::INT(buffer[i] as i8));
+                i += 1;
+
+                while buffer[j] != object_instructions_with_end[&buffer[i]] {
+                    string_arg.push(buffer[j] as char);
+                    j += 1;
+                }
+                j += 1; // Skip ENDSTR
+                arg_stack.push(InnerData::STR(string_arg));
+
+                i = j;
+                state = State::GenInstruction;
             },
         }
     }

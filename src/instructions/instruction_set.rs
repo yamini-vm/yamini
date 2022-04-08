@@ -14,6 +14,8 @@ pub enum InstructionSet {
     POP(InnerData, u8),
     JZ(InnerData),
     JN(InnerData),
+    STARTSTR,
+    ENDSTR,
 }
 
 impl PartialEq for InstructionSet {
@@ -31,6 +33,8 @@ impl PartialEq for InstructionSet {
             (InstructionSet::POP(a, b), InstructionSet::POP(c, d)) => a == c && b == d,
             (InstructionSet::JZ(a), InstructionSet::JZ(b)) => a == b,
             (InstructionSet::JN(a), InstructionSet::JN(b)) => a == b,
+            (InstructionSet::STARTSTR, InstructionSet::STARTSTR) => true,
+            (InstructionSet::ENDSTR, InstructionSet::ENDSTR) => true,
             _ => false,
         }
     }
@@ -46,11 +50,11 @@ impl InstructionSet {
                 };
 
                 let second_arg = match arg1 {
-                    Some(arg) => arg,
+                    Some(arg) => arg.get_u8(),
                     None => panic!("InstructionSet::LOAD: arg1 is None"),
                 };
 
-                InstructionSet::LOAD(first_arg, second_arg as u8)
+                InstructionSet::LOAD(first_arg, second_arg)
             },
             1 => InstructionSet::ADD,
             2 => InstructionSet::SUB,
@@ -72,11 +76,11 @@ impl InstructionSet {
                 };
 
                 let second_arg = match arg1 {
-                    Some(arg) => arg,
+                    Some(arg) => arg.get_u8(),
                     None => panic!("InstructionSet::LOAD: arg1 is None"),
                 };
 
-                InstructionSet::POP(first_arg, second_arg as u8)
+                InstructionSet::POP(first_arg, second_arg)
             },
             10 => {
                 match arg {
@@ -90,6 +94,8 @@ impl InstructionSet {
                     None => panic!("InstructionSet::JN: arg is None"),
                 }
             },
+            12 => InstructionSet::STARTSTR,
+            13 => InstructionSet::ENDSTR,
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }

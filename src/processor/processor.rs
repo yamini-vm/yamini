@@ -37,7 +37,7 @@ impl FlagRegister {
 #[allow(dead_code)]
 pub struct Processor {
     pc: usize,
-    registers: [InnerData; 10],
+    registers: [i8; 10],
     flag_register: FlagRegister,
 }
 
@@ -54,13 +54,13 @@ impl Processor {
         match instruction {
             InstructionSet::LOAD(value, offset) => {
                 if offset == &REGISTER_OFFSET {
-                    if *value < 0 || (*value as usize) > self.registers.len() {
+                    if value.get_i8() < 0 || value.get_i8() as usize > self.registers.len() {
                         panic!("Register index out of bounds!");
                     }
 
-                    stack.push(self.registers[*value as usize]);
+                    stack.push(InnerData::INT(self.registers[value.get_u8() as usize]));
                 } else if offset == &STACK_OFFSET {
-                    stack.push(*value);
+                    stack.push(value.clone());
                 }
             },
             InstructionSet::ADD => {
@@ -135,39 +135,48 @@ impl Processor {
             }
             InstructionSet::LABEL => {},
             InstructionSet::JMP(label) => {
-                self.pc = *label as usize;
+                self.pc = label.get_u8() as usize;
             },
             InstructionSet::POP(register_idx, offset) => {
                 if offset == &REGISTER_OFFSET {
-                    if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
+                    if register_idx.get_i8() < 0 || register_idx.get_i8() as usize > self.registers.len() {
                         panic!("Register index out of bounds!");
                     }
 
-                    self.registers[*register_idx as usize] = match stack.pop() {
-                        Some(value) => value,
+                    self.registers[register_idx.get_u8() as usize] = match stack.pop() {
+                        Some(value) => value.get_i8(),
                         None => panic!("Stack is empty!"),
                     };
                 }
             },
             InstructionSet::JZ(label) => {
                 if self.flag_register.zero {
-                    self.pc = *label as usize;
+                    self.pc = label.get_i8() as usize;
                 }
             },
             InstructionSet::JN(label) => {
                 if self.flag_register.negative {
-                    self.pc = *label as usize;
+                    self.pc = label.get_i8() as usize;
                 }
             },
+            InstructionSet::STARTSTR => {},
+            InstructionSet::ENDSTR => {},
         }
 
-        if stack.data().len() > 0 && *stack.top() == 0 {
-            self.flag_register.zero = true;
-        } else if stack.data.len() > 0 && *stack.top() < 0 {
-            self.flag_register.negative = true;
-        } else {
-            self.flag_register.zero = false;
-            self.flag_register.negative = false;
+        if stack.data.len() > 0 {
+            match stack.top() {
+                InnerData::INT(top_val) => {
+                    if stack.data().len() > 0 && *top_val == 0 {
+                        self.flag_register.zero = true;
+                    } else if stack.data.len() > 0 && *top_val < 0 {
+                        self.flag_register.negative = true;
+                    } else {
+                        self.flag_register.zero = false;
+                        self.flag_register.negative = false;
+                    }
+                },
+                _ => {},
+            }
         }
     }
 
