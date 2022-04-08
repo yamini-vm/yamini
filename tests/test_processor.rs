@@ -1,5 +1,5 @@
 use yamini::processor::Processor;
-use yamini::memory::{Stack, Memory};
+use yamini::memory::{Stack, Memory, InnerData};
 use yamini::instructions::InstructionSet;
 
 
@@ -9,72 +9,72 @@ fn test_execute_load() {
 
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::LOAD(3, 200), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::LOAD(InnerData::INT(3), 200), &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[3]);
+    assert_eq!(stack.data(), &[InnerData::INT(3)]);
     assert_eq!(stack.head(), 1);
 }
 
 #[test]
 fn test_execute_add() {
     let mut stack = Stack::new();
-    stack.push(3);
-    stack.push(4);
+    stack.push(InnerData::INT(3));
+    stack.push(InnerData::INT(4));
 
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::ADD, &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[7]);
+    assert_eq!(stack.data(), &[InnerData::INT(7)]);
     assert_eq!(stack.head(), 1);
 }
 
 #[test]
 fn test_execute_sub() {
     let mut stack = Stack::new();
-    stack.push(3);
-    stack.push(4);
+    stack.push(InnerData::INT(3));
+    stack.push(InnerData::INT(4));
 
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::SUB, &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[-1]);
+    assert_eq!(stack.data(), &[InnerData::INT(-1)]);
     assert_eq!(stack.head(), 1);
 }
 
 #[test]
 fn test_execute_mul() {
     let mut stack = Stack::new();
-    stack.push(3);
-    stack.push(4);
+    stack.push(InnerData::INT(3));
+    stack.push(InnerData::INT(4));
 
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::MUL, &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[12]);
+    assert_eq!(stack.data(), &[InnerData::INT(12)]);
     assert_eq!(stack.head(), 1);
 }
 
 #[test]
 fn test_execute_div() {
     let mut stack = Stack::new();
-    stack.push(12);
-    stack.push(4);
+    stack.push(InnerData::INT(12));
+    stack.push(InnerData::INT(4));
 
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[3]);
+    assert_eq!(stack.data(), &[InnerData::INT(3)]);
     assert_eq!(stack.head(), 1);
 }
 
 #[test]
 fn test_execute_ret() {
     let mut stack = Stack::new();
-    stack.push(3);
+    stack.push(InnerData::INT(3));
 
     let mut processor = Processor::new();
 
@@ -91,14 +91,14 @@ fn test_execute_ret() {
 #[test]
 fn test_execute_mod() {
     let mut stack = Stack::new();
-    stack.push(12);
-    stack.push(5);
+    stack.push(InnerData::INT(12));
+    stack.push(InnerData::INT(5));
 
     let mut processor = Processor::new();
 
     processor.execute(&InstructionSet::DIV, &mut stack, &mut Vec::new());
 
-    assert_eq!(stack.data(), &[2]);
+    assert_eq!(stack.data(), &[InnerData::INT(2)]);
     assert_eq!(stack.head(), 1);
 }
 
@@ -118,7 +118,7 @@ fn test_execute_jmp() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::JMP(2), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::JMP(InnerData::INT(2)), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -129,8 +129,8 @@ fn test_execute_popregister() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::LOAD(2, 100), &mut stack, &mut Vec::new());
-    processor.execute(&InstructionSet::POP(2, 100), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::LOAD(InnerData::INT(2), 100), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::POP(InnerData::INT(2), 100), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -141,7 +141,7 @@ fn test_execute_jz() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::JZ(2), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::JZ(InnerData::INT(2)), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -152,7 +152,7 @@ fn test_execute_jn() {
     let mut stack = Stack::new();
     let mut processor = Processor::new();
 
-    processor.execute(&InstructionSet::JN(2), &mut stack, &mut Vec::new());
+    processor.execute(&InstructionSet::JN(InnerData::INT(2)), &mut stack, &mut Vec::new());
 
     assert_eq!(stack.data(), &[]);
     assert_eq!(stack.head(), 0);
@@ -162,8 +162,8 @@ fn test_execute_jn() {
 fn test_execute_program() {
     let mut program = Vec::new();
 
-    program.push(InstructionSet::LOAD(3, 200));
-    program.push(InstructionSet::LOAD(4, 200));
+    program.push(InstructionSet::LOAD(InnerData::INT(3), 200));
+    program.push(InstructionSet::LOAD(InnerData::INT(4), 200));
     program.push(InstructionSet::MUL);
     program.push(InstructionSet::RET);
 

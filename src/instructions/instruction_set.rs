@@ -95,6 +95,7 @@ impl InstructionSet {
                 }
             },
             12 => InstructionSet::STARTSTR,
+            13 => InstructionSet::ENDSTR,
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }
