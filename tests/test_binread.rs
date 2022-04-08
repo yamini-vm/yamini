@@ -8,8 +8,8 @@ fn test_read_from_file() {
     assert_eq!(program.len(), 4);
 
     let expected_program = vec![
-        InstructionSet::LOAD(3),
-        InstructionSet::LOAD(4),
+        InstructionSet::LOAD(3, 200),
+        InstructionSet::LOAD(4, 200),
         InstructionSet::ADD,
         InstructionSet::RET,
     ];
