@@ -4,6 +4,13 @@ use std::io::{prelude::*, BufReader};
 use crate::instructions::InstructionSet;
 use crate::memory::InnerData;
 
+#[derive(Debug)]
+enum State {
+    ReadOneArg,
+    ReadTwoArgs,
+    GenInstruction,
+    ReadInstruction,
+}
 
 fn read_file_line_by_line(filepath: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let file = File::open(filepath)?;
@@ -25,35 +32,83 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     }
 
     let instruction_with_arg = vec![
-        0, // LOAD
         8, // JMP
-        9, // LOADREGISTER
-        10, // POPREGISTER
-        11, // JZ
-        12, // JN
+        9, // POP
+        10, // JZ
+        11, // JN
+    ];
+
+    let instruction_with_two_args = vec![
+        0, // LOAD
     ];
 
     let mut program = Vec::new();
-    let mut is_reading_arg = false;
-    let mut current_arg_instruction = 0;
-    let mut arg: InnerData;
+    let mut state = State::ReadInstruction;
 
-    for byte in buffer {
-        if is_reading_arg {
-            arg = byte as InnerData;
-            let instruction = InstructionSet::from_int(current_arg_instruction, Some(arg));
-            program.push(instruction);
-            is_reading_arg = false;
-            continue;
-        }
+    let mut instruction_stack = Vec::new();
+    let mut arg_stack = Vec::new();
 
-        if instruction_with_arg.contains(&byte) {
-            is_reading_arg = true;
-            current_arg_instruction = byte;
-        } else {
-            let instruction = InstructionSet::from_int(byte as u8, None);
-            program.push(instruction);
+    let mut instruction;
+    let mut arg;
+
+    let mut i = 0;
+    while i < buffer.len() {
+        match state {
+            State::ReadOneArg => {
+                arg = buffer[i] as InnerData;
+                arg_stack.push(arg);
+
+                state = State::GenInstruction;
+                i += 1;
+            },
+            State::ReadTwoArgs => {
+                arg = buffer[i] as InnerData;
+                arg_stack.push(arg);
+
+                i += 1;
+                arg = buffer[i] as InnerData;
+                arg_stack.push(arg);
+
+                state = State::GenInstruction;
+                i += 1;
+            },
+            State::GenInstruction => {
+                instruction = match instruction_stack.pop() {
+                    Some(instruction) => instruction as i8,
+                    None => panic!("Instruction stack is empty"),
+                };
+
+                program.push(InstructionSet::from_int(
+                    instruction as u8, 
+                    arg_stack.pop(),
+                    arg_stack.pop(),
+                ));
+
+                state = State::ReadInstruction;
+            },
+            State::ReadInstruction => {
+                instruction = buffer[i] as InnerData;
+                instruction_stack.push(instruction);
+
+                if instruction_with_arg.contains(&instruction) {
+                    state = State::ReadOneArg;
+                } else if instruction_with_two_args.contains(&instruction) {
+                    state = State::ReadTwoArgs;
+                } else {
+                    state = State::GenInstruction;
+                }
+
+                i += 1;
+            },
         }
     }
+
+    // Read RET instruction
+    program.push(InstructionSet::from_int(
+        instruction_stack.pop().unwrap() as u8,
+        None, 
+        None
+    ));
+
     program
 }

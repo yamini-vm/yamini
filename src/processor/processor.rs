@@ -3,6 +3,8 @@ use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{Memory, InnerData};
 
+use super::constants::{REGISTER_OFFSET, STACK_OFFSET};
+
 
 #[allow(dead_code)]
 struct FlagRegister {
@@ -50,8 +52,16 @@ impl Processor {
 
     pub fn execute(&mut self, instruction: &InstructionSet, stack: &mut Stack, stdout: &mut dyn io::Write) {
         match instruction {
-            InstructionSet::LOAD(value) => {
-                stack.push(*value);
+            InstructionSet::LOAD(value, offset) => {
+                if offset == &REGISTER_OFFSET {
+                    if *value < 0 || (*value as usize) > self.registers.len() {
+                        panic!("Register index out of bounds!");
+                    }
+
+                    stack.push(self.registers[*value as usize]);
+                } else if offset == &STACK_OFFSET {
+                    stack.push(*value);
+                }
             },
             InstructionSet::ADD => {
                 let b = match stack.pop() {
@@ -123,18 +133,11 @@ impl Processor {
 
                 stack.push(a % b);
             }
-            InstructionSet::LOADLABEL => {},
+            InstructionSet::LABEL => {},
             InstructionSet::JMP(label) => {
                 self.pc = *label as usize;
             },
-            InstructionSet::LOADREGISTER(register_idx) => {
-                if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
-                    panic!("Register index out of bounds!");
-                }
-
-                stack.push(self.registers[*register_idx as usize]);
-            },
-            InstructionSet::POPREGISTER(register_idx) => {
+            InstructionSet::POP(register_idx) => {
                 if *register_idx < 0 || (*register_idx as usize) > self.registers.len() {
                     panic!("Register index out of bounds!");
                 }
