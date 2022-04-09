@@ -50,7 +50,8 @@ impl Processor {
         }
     }
 
-    pub fn execute(&mut self, instruction: &InstructionSet, stack: &mut Stack, stdout: &mut dyn io::Write) {
+    pub fn execute(&mut self, instruction: &InstructionSet, stack: &mut Stack, call_stack: &mut Stack,
+                   stdout: &mut dyn io::Write) {
         match instruction {
             InstructionSet::LOAD(value, offset) => {
                 if offset == &REGISTER_OFFSET {
@@ -160,6 +161,15 @@ impl Processor {
             },
             InstructionSet::STARTSTR => {},
             InstructionSet::ENDSTR => {},
+            InstructionSet::RET => {
+                if let Some(value) = call_stack.pop() {
+                    self.pc = value.get_u8() as usize;
+                }
+            },
+            InstructionSet::CALL(label) => {
+                call_stack.push(InnerData::INT(self.pc as i8));
+                self.pc = label.get_u8() as usize;
+            },
         }
 
         if stack.data.len() > 0 {
@@ -179,10 +189,11 @@ impl Processor {
         }
     }
 
-    pub fn execute_program(&mut self, memory: Memory, stack: &mut Stack, stdout: &mut dyn io::Write) {
+    pub fn execute_program(&mut self, memory: Memory, stack: &mut Stack, call_stack: &mut Stack,
+                           stdout: &mut dyn io::Write) {
         loop {
             let instruction = memory.get_value(self.pc);
-            self.execute(instruction, stack, stdout);
+            self.execute(instruction, stack, call_stack, stdout);
 
             self.pc += 1;
 

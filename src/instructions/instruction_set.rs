@@ -16,7 +16,9 @@ pub enum InstructionSet {
     JN(InnerData),
     STARTSTR,
     ENDSTR,
-    SHOW
+    SHOW,
+    RET,
+    CALL(InnerData),
 }
 
 impl PartialEq for InstructionSet {
@@ -37,6 +39,8 @@ impl PartialEq for InstructionSet {
             (InstructionSet::STARTSTR, InstructionSet::STARTSTR) => true,
             (InstructionSet::ENDSTR, InstructionSet::ENDSTR) => true,
             (InstructionSet::SHOW, InstructionSet::SHOW) => true,
+            (InstructionSet::RET, InstructionSet::RET) => true,
+            (InstructionSet::CALL(a), InstructionSet::CALL(b)) => a == b,
             _ => false,
         }
     }
@@ -99,6 +103,13 @@ impl InstructionSet {
             12 => InstructionSet::STARTSTR,
             13 => InstructionSet::ENDSTR,
             14 => InstructionSet::SHOW,
+            15 => InstructionSet::RET,
+            16 => {
+                match arg {
+                    Some(arg) => InstructionSet::CALL(arg),
+                    None => panic!("InstructionSet::CALL: arg is None"),
+                }
+            },
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }

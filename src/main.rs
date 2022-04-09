@@ -18,10 +18,11 @@ fn main() {
     let program = read_from_file(filepath);
 
     let mut stack = Stack::new();
+    let mut call_stack = Stack::new();
 
     let mut memory = Memory::new();
     memory.load_program(program);
 
     let mut processor = Processor::new();
-    processor.execute_program(memory, &mut stack, &mut io::stdout());
+    processor.execute_program(memory, &mut stack, &mut call_stack, &mut io::stdout());
 }
