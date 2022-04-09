@@ -80,12 +80,10 @@ fn test_execute_ret() {
 
     let mut stdout = Vec::new();
 
-    processor.execute(&InstructionSet::RET, &mut stack, &mut stdout);
+    processor.execute(&InstructionSet::HALT, &mut stack, &mut stdout);
 
-    assert_eq!(stack.data(), &[]);
-    assert_eq!(stack.head(), 0);
-
-    assert_eq!(String::from_utf8(stdout).unwrap(), "3\n");
+    assert_eq!(stack.data(), &[InnerData::INT(3)]);
+    assert_eq!(stack.head(), 1);
 }
 
 #[test]
@@ -182,7 +180,7 @@ fn test_execute_program() {
     program.push(InstructionSet::LOAD(InnerData::INT(3), 200));
     program.push(InstructionSet::LOAD(InnerData::INT(4), 200));
     program.push(InstructionSet::MUL);
-    program.push(InstructionSet::RET);
+    program.push(InstructionSet::HALT);
 
     let mut stack = Stack::new();
 
@@ -195,8 +193,6 @@ fn test_execute_program() {
 
     processor.execute_program(memory, &mut stack, &mut stdout);
 
-    assert_eq!(stack.data(), &[]);
-    assert_eq!(stack.head(), 0);
-
-    assert_eq!(String::from_utf8(stdout).unwrap(), "12\n");
+    assert_eq!(stack.data(), &[InnerData::INT(12)]);
+    assert_eq!(stack.head(), 1);
 }
