@@ -43,6 +43,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::ENDSTR;
     assert_eq!(instruction, InstructionSet::ENDSTR);
+
+    let instruction = InstructionSet::SHOW;
+    assert_eq!(instruction, InstructionSet::SHOW);
 }
 
 #[test]
@@ -88,4 +91,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(13, None, None);
     assert_eq!(instruction, InstructionSet::ENDSTR);
+
+    let instruction = InstructionSet::from_int(14, None, None);
+    assert_eq!(instruction, InstructionSet::SHOW);
 }
