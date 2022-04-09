@@ -111,7 +111,8 @@ impl Processor {
 
                 stack.push(a / b);
             },
-            InstructionSet::RET | InstructionSet::SHOW => {
+            InstructionSet::HALT  => {},
+            InstructionSet::SHOW => {
                 if let Some(value) = stack.pop() {
                     match writeln!(stdout, "{}", value) {
                         Ok(_) => (),
@@ -185,7 +186,7 @@ impl Processor {
 
             self.pc += 1;
 
-            if *instruction == InstructionSet::RET {
+            if *instruction == InstructionSet::HALT {
                 break;
             }
         }   

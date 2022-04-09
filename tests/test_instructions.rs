@@ -17,8 +17,8 @@ fn test_instruction_equality() {
     let instruction = InstructionSet::DIV;
     assert_eq!(instruction, InstructionSet::DIV);
 
-    let instruction = InstructionSet::RET;
-    assert_eq!(instruction, InstructionSet::RET);
+    let instruction = InstructionSet::HALT;
+    assert_eq!(instruction, InstructionSet::HALT);
 
     let instruction = InstructionSet::MOD;
     assert_eq!(instruction, InstructionSet::MOD);
@@ -66,7 +66,7 @@ fn test_instruction_from_int() {
     assert_eq!(instruction, InstructionSet::DIV);
 
     let instruction = InstructionSet::from_int(5, None, None);
-    assert_eq!(instruction, InstructionSet::RET);
+    assert_eq!(instruction, InstructionSet::HALT);
 
     let instruction = InstructionSet::from_int(6, None, None);
     assert_eq!(instruction, InstructionSet::MOD);

@@ -12,7 +12,7 @@ fn test_read_from_file() {
         InstructionSet::LOAD(InnerData::INT(3), 200),
         InstructionSet::LOAD(InnerData::INT(4), 200),
         InstructionSet::ADD,
-        InstructionSet::RET,
+        InstructionSet::HALT,
     ];
 
     assert_eq!(program, expected_program);
