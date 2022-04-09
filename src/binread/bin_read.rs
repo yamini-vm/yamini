@@ -37,6 +37,7 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
         8, // JMP
         10, // JZ
         11, // JN
+        16, // CALL
     ];
 
     let instruction_with_two_args = vec![

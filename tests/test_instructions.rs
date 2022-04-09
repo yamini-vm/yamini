@@ -46,6 +46,12 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::SHOW;
     assert_eq!(instruction, InstructionSet::SHOW);
+
+    let instruction = InstructionSet::RET;
+    assert_eq!(instruction, InstructionSet::RET);
+
+    let instruction = InstructionSet::CALL(InnerData::INT(2));
+    assert_eq!(instruction, InstructionSet::CALL(InnerData::INT(2)));
 }
 
 #[test]
@@ -94,4 +100,10 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(14, None, None);
     assert_eq!(instruction, InstructionSet::SHOW);
+
+    let instruction = InstructionSet::from_int(15, None, None);
+    assert_eq!(instruction, InstructionSet::RET);
+
+    let instruction = InstructionSet::from_int(16, Some(InnerData::INT(2)), None);
+    assert_eq!(instruction, InstructionSet::CALL(InnerData::INT(2)));
 }
