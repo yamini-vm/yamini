@@ -159,6 +159,23 @@ fn test_execute_jn() {
 }
 
 #[test]
+fn test_execute_show() {
+    let mut stack = Stack::new();
+    stack.push(InnerData::INT(3));
+
+    let mut processor = Processor::new();
+
+    let mut stdout = Vec::new();
+
+    processor.execute(&InstructionSet::SHOW, &mut stack, &mut stdout);
+
+    assert_eq!(stack.data(), &[]);
+    assert_eq!(stack.head(), 0);
+
+    assert_eq!(String::from_utf8(stdout).unwrap(), "3\n");
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 

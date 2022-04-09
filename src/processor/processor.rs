@@ -111,15 +111,13 @@ impl Processor {
 
                 stack.push(a / b);
             },
-            InstructionSet::RET => {
+            InstructionSet::RET | InstructionSet::SHOW => {
                 if let Some(value) = stack.pop() {
                     match writeln!(stdout, "{}", value) {
                         Ok(_) => (),
                         Err(error) => panic!("{}", error),
                     }
-                } else {
-                    panic!("Stack is empty!")
-                };
+                }
             },
             InstructionSet::MOD => {
                 let b = match stack.pop() {
