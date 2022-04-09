@@ -1,6 +1,6 @@
 # Yamini
 
-Virtual machine with a bytecode IR to plug your language front-ends to. Yamini is a stack based RISC type virtual machine. 
+Yamini is a stack based RISC type virtual machine with a bytecode IR to plug your language front-ends to.  
 
 ## Steps to run
 
