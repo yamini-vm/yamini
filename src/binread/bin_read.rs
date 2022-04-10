@@ -41,8 +41,9 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     ];
 
     let instruction_with_two_args = vec![
-        0, // LOAD
-        9, // POP
+        0,  // LOAD
+        9,  // POP
+        17, // EQU
     ];
 
     let mut object_instructions_with_end = HashMap::new();

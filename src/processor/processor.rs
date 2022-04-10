@@ -170,6 +170,40 @@ impl Processor {
                 call_stack.push(InnerData::INT(self.pc as i8));
                 self.pc = label.get_u8() as usize;
             },
+            InstructionSet::EQU(value, offset) => {
+                let stack_top_val = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+                
+                let stack_top_val_clone = stack_top_val.clone();
+                stack.push(stack_top_val_clone);
+
+                if offset == &REGISTER_OFFSET {
+                    if value.get_i8() < 0 || value.get_i8() as usize > self.registers.len() {
+                        panic!("Register index out of bounds!");
+                    }
+
+                    let register_val = self.registers[value.get_u8() as usize];
+
+                    match (stack_top_val, register_val) {
+                        (InnerData::INT(a), b) => {
+                            stack.push(InnerData::INT(if a == b { 1 } else { 0 }));
+                        },
+                        _ => stack.push(InnerData::INT(0)),
+                    }
+                } else if offset == &STACK_OFFSET {
+                    match (stack_top_val, value) {
+                        (InnerData::INT(stack_top_val), InnerData::INT(value)) => {
+                            stack.push(InnerData::INT(if stack_top_val == *value { 1 } else { 0 }));
+                        },
+                        (InnerData::STR(stack_top_val), InnerData::STR(value)) => {
+                            stack.push(InnerData::INT(if stack_top_val == *value { 1 } else { 0 }));
+                        },
+                        _ => stack.push(InnerData::INT(0))
+                    }
+                }
+            }
         }
 
         if stack.data.len() > 0 {

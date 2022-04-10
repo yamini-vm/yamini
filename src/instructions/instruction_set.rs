@@ -19,6 +19,7 @@ pub enum InstructionSet {
     SHOW,
     RET,
     CALL(InnerData),
+    EQU(InnerData, u8),
 }
 
 impl PartialEq for InstructionSet {
@@ -41,6 +42,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::SHOW, InstructionSet::SHOW) => true,
             (InstructionSet::RET, InstructionSet::RET) => true,
             (InstructionSet::CALL(a), InstructionSet::CALL(b)) => a == b,
+            (InstructionSet::EQU(a, b), InstructionSet::EQU(c, d)) => a == c && b == d,
             _ => false,
         }
     }
@@ -109,6 +111,19 @@ impl InstructionSet {
                     Some(arg) => InstructionSet::CALL(arg),
                     None => panic!("InstructionSet::CALL: arg is None"),
                 }
+            },
+            17 => {
+                let first_arg = match arg {
+                    Some(arg) => arg,
+                    None => panic!("InstructionSet::EQU: arg is None"),
+                };
+
+                let second_arg = match arg1 {
+                    Some(arg) => arg.get_u8(),
+                    None => panic!("InstructionSet::EQU: arg1 is None"),
+                };
+
+                InstructionSet::EQU(first_arg, second_arg)
             },
             _ => panic!("Invalid instruction set value: {}", value),
         }
