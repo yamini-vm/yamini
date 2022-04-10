@@ -209,6 +209,20 @@ fn test_execute_call() {
 }
 
 #[test]
+fn test_execute_equ() {
+    let mut stack = Stack::new();
+    stack.push(InnerData::INT(3));
+
+    let mut processor = Processor::new();
+
+    processor.execute(&InstructionSet::EQU(InnerData::INT(3), 200), &mut stack, 
+                      &mut Stack::new(), &mut Vec::new());
+
+    assert_eq!(stack.data(), &[InnerData::INT(3), InnerData::INT(1)]);
+    assert_eq!(stack.head(), 2);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 
