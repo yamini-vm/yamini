@@ -1,9 +1,9 @@
 use std::io;
 use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
-use crate::memory::{Memory, InnerData};
+use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
-use super::constants::{REGISTER_OFFSET, STACK_OFFSET};
+use super::constants::{REGISTER_OFFSET, STACK_OFFSET, DATA_MEMORY_OFFSET};
 
 
 #[allow(dead_code)]
@@ -50,7 +50,8 @@ impl Processor {
         }
     }
 
-    pub fn execute(&mut self, instruction: &InstructionSet, stack: &mut Stack, call_stack: &mut Stack,
+    pub fn execute(&mut self, instruction: &InstructionSet, data_memory: &mut DataMemory,
+                   stack: &mut Stack, call_stack: &mut Stack,
                    stdout: &mut dyn io::Write) {
         match instruction {
             InstructionSet::LOAD(value, offset) => {
@@ -62,6 +63,10 @@ impl Processor {
                     stack.push(InnerData::INT(self.registers[value.get_u8() as usize]));
                 } else if offset == &STACK_OFFSET {
                     stack.push(value.clone());
+                } else if offset == &DATA_MEMORY_OFFSET {
+                    stack.push(data_memory.get_var_value(value.get_u8()).clone());
+                } else {
+                    panic!("Invalid offset!");
                 }
             },
             InstructionSet::ADD => {
@@ -147,6 +152,15 @@ impl Processor {
                         Some(value) => value.get_i8(),
                         None => panic!("Stack is empty!"),
                     };
+                } else if offset == &DATA_MEMORY_OFFSET {
+                    let value = match stack.pop() {
+                        Some(value) => value,
+                        None => panic!("Stack is empty!"),
+                    };
+
+                    data_memory.set_var_value(register_idx.get_u8(), value);
+                } else {
+                    panic!("Invalid offset!");
                 }
             },
             InstructionSet::JZ(label) => {
@@ -223,11 +237,12 @@ impl Processor {
         }
     }
 
-    pub fn execute_program(&mut self, memory: Memory, stack: &mut Stack, call_stack: &mut Stack,
+    pub fn execute_program(&mut self, program_memory: ProgramMemory, data_memory: &mut DataMemory,
+                           stack: &mut Stack, call_stack: &mut Stack,
                            stdout: &mut dyn io::Write) {
         loop {
-            let instruction = memory.get_value(self.pc);
-            self.execute(instruction, stack, call_stack, stdout);
+            let instruction = program_memory.get_instruction(self.pc);
+            self.execute(instruction, data_memory, stack, call_stack, stdout);
 
             self.pc += 1;
 
