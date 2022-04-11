@@ -1,8 +1,9 @@
 use std::io;
 use std::env;
 
+use yamini::memory::DataMemory;
 use yamini::memory::Stack;
-use yamini::memory::Memory;
+use yamini::memory::{ProgramMemory};
 use yamini::processor::Processor;
 use yamini::binread::read_from_file;
 
@@ -20,9 +21,11 @@ fn main() {
     let mut stack = Stack::new();
     let mut call_stack = Stack::new();
 
-    let mut memory = Memory::new();
-    memory.load_program(program);
+    let mut program_memory = ProgramMemory::new();
+    program_memory.load_program(program);
+
+    let mut data_memory = DataMemory::new();
 
     let mut processor = Processor::new();
-    processor.execute_program(memory, &mut stack, &mut call_stack, &mut io::stdout());
+    processor.execute_program(program_memory, &mut data_memory, &mut stack, &mut call_stack, &mut io::stdout());
 }
