@@ -49,6 +49,8 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     let mut object_instructions_with_end = HashMap::new();
     object_instructions_with_end.insert(12, 13); // 12 = STARTSTR, 13 = ENDSTR
 
+    let object_offsets = vec![3, 5];
+
     let mut program = Vec::new();
     let mut state = State::ReadInstruction;
 
@@ -100,7 +102,7 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
                 if instruction_with_arg.contains(&instruction) {
                     state = State::ReadOneArg;
                 } else if instruction_with_two_args.contains(&instruction) {
-                    if object_instructions_with_end.contains_key(&buffer[i + 2]) {
+                    if object_offsets.contains(&buffer[i+1]) && object_instructions_with_end.contains_key(&buffer[i + 2]) {
                         state = State::ReadObject;
                     } else {
                         state = State::ReadTwoArgs;

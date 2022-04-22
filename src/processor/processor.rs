@@ -3,7 +3,7 @@ use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
-use super::constants::{REGISTER_OFFSET, STACK_OFFSET, DATA_MEMORY_OFFSET};
+use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET, DATA_MEMORY_OFFSET_STR};
 
 
 #[allow(dead_code)]
@@ -61,9 +61,9 @@ impl Processor {
                     }
 
                     stack.push(InnerData::INT(self.registers[value.get_u8() as usize]));
-                } else if offset == &STACK_OFFSET {
+                } else if offset == &STACK_OFFSET || offset == &STACK_OFFSET_STR {
                     stack.push(value.clone());
-                } else if offset == &DATA_MEMORY_OFFSET {
+                } else if offset == &DATA_MEMORY_OFFSET || offset == &DATA_MEMORY_OFFSET_STR {
                     stack.push(data_memory.get_var_value(value.get_u8()).clone());
                 } else {
                     panic!("Invalid offset!");
@@ -206,7 +206,7 @@ impl Processor {
                         },
                         _ => stack.push(InnerData::INT(0)),
                     }
-                } else if offset == &STACK_OFFSET {
+                } else if offset == &STACK_OFFSET || offset == &STACK_OFFSET_STR {
                     match (stack_top_val, value) {
                         (InnerData::INT(stack_top_val), InnerData::INT(value)) => {
                             stack.push(InnerData::INT(if stack_top_val == *value { 1 } else { 0 }));
