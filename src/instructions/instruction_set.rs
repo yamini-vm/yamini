@@ -20,6 +20,7 @@ pub enum InstructionSet {
     RET,
     CALL(InnerData),
     EQU(InnerData, u8),
+    NEG,
 }
 
 impl PartialEq for InstructionSet {
@@ -43,6 +44,7 @@ impl PartialEq for InstructionSet {
             (InstructionSet::RET, InstructionSet::RET) => true,
             (InstructionSet::CALL(a), InstructionSet::CALL(b)) => a == b,
             (InstructionSet::EQU(a, b), InstructionSet::EQU(c, d)) => a == c && b == d,
+            (InstructionSet::NEG, InstructionSet::NEG) => true,
             _ => false,
         }
     }
@@ -125,6 +127,7 @@ impl InstructionSet {
 
                 InstructionSet::EQU(first_arg, second_arg)
             },
+            18 => InstructionSet::NEG,
             _ => panic!("Invalid instruction set value: {}", value),
         }
     }
