@@ -55,6 +55,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::EQU(InnerData::INT(2), 100);
     assert_eq!(instruction, InstructionSet::EQU(InnerData::INT(2), 100));
+
+    let instruction = InstructionSet::NEG;
+    assert_eq!(instruction, InstructionSet::NEG);
 }
 
 #[test]
@@ -112,4 +115,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(17, Some(InnerData::INT(2)), Some(InnerData::INT(100)));
     assert_eq!(instruction, InstructionSet::EQU(InnerData::INT(2), 100));
+
+    let instruction = InstructionSet::from_int(18, None, None);
+    assert_eq!(instruction, InstructionSet::NEG);
 }

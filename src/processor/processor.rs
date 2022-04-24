@@ -217,6 +217,17 @@ impl Processor {
                         _ => stack.push(InnerData::INT(0))
                     }
                 }
+            },
+            InstructionSet::NEG => {
+                let value = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                match value {
+                    InnerData::INT(value) => stack.push(InnerData::INT(-value)),
+                    _ => panic!("Invalid type!"),
+                }
             }
         }
 
