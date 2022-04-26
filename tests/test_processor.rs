@@ -321,19 +321,20 @@ fn test_execute_call() {
 fn test_execute_equ() {
     let mut stack = Stack::new();
     stack.push(InnerData::INT(3));
+    stack.push(InnerData::INT(3));
 
     let mut processor = Processor::new();
 
     processor.execute(
-        &InstructionSet::EQU(InnerData::INT(3), 2),
+        &InstructionSet::EQU,
         &mut DataMemory::new(),
         &mut stack, 
         &mut Stack::new(), 
         &mut Vec::new()
     );
 
-    assert_eq!(stack.data(), &[InnerData::INT(3), InnerData::INT(1)]);
-    assert_eq!(stack.head(), 2);
+    assert_eq!(stack.data(), &[InnerData::INT(1)]);
+    assert_eq!(stack.head(), 1);
 }
 
 #[test]
