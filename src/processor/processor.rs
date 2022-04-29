@@ -4,7 +4,7 @@ use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
 use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
-use super::constants::{DATA_MEMORY_OFFSET_STR, ADDR_OFFSET};
+use super::constants::{DATA_MEMORY_OFFSET_STR, ADDR_OFFSET, PTR_OFFSET};
 
 
 #[allow(dead_code)]
@@ -145,23 +145,32 @@ impl Processor {
             InstructionSet::JMP(label) => {
                 self.pc = label.get_u8() as usize;
             },
-            InstructionSet::POP(register_idx, offset) => {
+            InstructionSet::POP(value, offset) => {
                 if offset == &REGISTER_OFFSET {
-                    if register_idx.get_i8() < 0 || register_idx.get_i8() as usize > self.registers.len() {
+                    if value.get_i8() < 0 || value.get_i8() as usize > self.registers.len() {
                         panic!("Register index out of bounds!");
                     }
 
-                    self.registers[register_idx.get_u8() as usize] = match stack.pop() {
+                    self.registers[value.get_u8() as usize] = match stack.pop() {
                         Some(value) => value.get_i8(),
                         None => panic!("Stack is empty!"),
                     };
                 } else if offset == &DATA_MEMORY_OFFSET {
-                    let value = match stack.pop() {
+                    let data_val = match stack.pop() {
                         Some(value) => value,
                         None => panic!("Stack is empty!"),
                     };
 
-                    data_memory.set_var_value(register_idx.get_u8(), value);
+                    data_memory.set_var_value(value.get_u8(), data_val);
+                } else if offset == &PTR_OFFSET {
+                    let address = data_memory.get_var_value(value.get_u8()).clone();
+
+                    let data_val = match stack.pop() {
+                        Some(value) => value,
+                        None => panic!("Stack is empty!"),
+                    };
+
+                    data_memory.set_var_value(address.get_u8(), data_val);
                 } else {
                     panic!("Invalid offset!");
                 }
