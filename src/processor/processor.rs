@@ -170,7 +170,7 @@ impl Processor {
                         None => panic!("Stack is empty!"),
                     };
 
-                    data_memory.set_var_value(address.get_u8(), data_val);
+                    data_memory.set_var_value(address.get_u8() / 8, data_val);
                 } else {
                     panic!("Invalid offset!");
                 }
