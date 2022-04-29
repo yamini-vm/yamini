@@ -219,7 +219,20 @@ impl Processor {
                     InnerData::INT(value) => stack.push(InnerData::INT(-value)),
                     _ => panic!("Invalid type!"),
                 }
-            }
+            },
+            InstructionSet::DEREF => {
+                let value = match stack.pop() {
+                    Some(value) => value,
+                    None => panic!("Stack is empty!"),
+                };
+
+                match value {
+                    InnerData::INT(value) => stack.push(
+                        InnerData::INT(data_memory.get_var_value(value as u8 / 8).get_i8())
+                    ),
+                    _ => panic!("Invalid type!"),
+                }
+            },
         }
 
         if stack.data.len() > 0 {

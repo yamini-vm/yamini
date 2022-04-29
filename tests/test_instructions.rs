@@ -58,6 +58,9 @@ fn test_instruction_equality() {
 
     let instruction = InstructionSet::NEG;
     assert_eq!(instruction, InstructionSet::NEG);
+
+    let instruction = InstructionSet::DEREF;
+    assert_eq!(instruction, InstructionSet::DEREF);
 }
 
 #[test]
@@ -118,4 +121,7 @@ fn test_instruction_from_int() {
 
     let instruction = InstructionSet::from_int(18, None, None);
     assert_eq!(instruction, InstructionSet::NEG);
+
+    let instruction = InstructionSet::from_int(19, None, None);
+    assert_eq!(instruction, InstructionSet::DEREF);
 }
