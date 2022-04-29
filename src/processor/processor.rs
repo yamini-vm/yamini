@@ -3,7 +3,8 @@ use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
-use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET, DATA_MEMORY_OFFSET_STR};
+use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
+use super::constants::{DATA_MEMORY_OFFSET_STR, ADDR_OFFSET};
 
 
 #[allow(dead_code)]
@@ -65,6 +66,8 @@ impl Processor {
                     stack.push(value.clone());
                 } else if offset == &DATA_MEMORY_OFFSET || offset == &DATA_MEMORY_OFFSET_STR {
                     stack.push(data_memory.get_var_value(value.get_u8()).clone());
+                } else if offset == &ADDR_OFFSET {
+                    stack.push(InnerData::INT(value.get_u8() as i8 * 8));
                 } else {
                     panic!("Invalid offset!");
                 }
