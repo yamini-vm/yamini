@@ -338,6 +338,25 @@ fn test_execute_equ() {
 }
 
 #[test]
+fn test_execute_deref() {
+    let mut stack = Stack::new();
+    stack.push(InnerData::INT(3));
+
+    let mut processor = Processor::new();
+
+    processor.execute(
+        &InstructionSet::DEREF,
+        &mut DataMemory::new(),
+        &mut stack, 
+        &mut Stack::new(), 
+        &mut Vec::new()
+    );
+
+    assert_eq!(stack.data(), &[InnerData::INT(0)]);
+    assert_eq!(stack.head(), 1);
+}
+
+#[test]
 fn test_execute_program() {
     let mut program = Vec::new();
 
