@@ -18,4 +18,4 @@ user@programmer~:$ cargo test
 
 ## License
 
-- This project is licensed under the <a href="https://github.com/yamini-vm/ydb/blob/master/LICENSE">MIT license</a>.
+This project is licensed under the <a href="https://github.com/yamini-vm/ydb/blob/master/LICENSE">MIT license</a>.
