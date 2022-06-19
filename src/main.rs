@@ -20,7 +20,6 @@ fn main() {
     let args = parser.parse_args().unwrap();
 
     let filepath = &args.get("file_path").unwrap().get_str();
-    
     let instructions_flag = args.get("instructions").unwrap().get_bool();
 
     let program = read_from_file(filepath);
