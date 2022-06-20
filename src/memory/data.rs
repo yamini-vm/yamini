@@ -22,6 +22,16 @@ impl PartialEq for InnerData {
 }
 
 impl InnerData {
+    pub fn from(data: &str, variant: &str) -> InnerData {
+        match variant {
+            "INT" => InnerData::INT(data.parse::<i8>().unwrap()),
+            "INT16" => InnerData::INT16(data.parse::<i16>().unwrap()),
+            "INT32" => InnerData::INT32(data.parse::<i32>().unwrap()),
+            "STR" => InnerData::STR(data.to_string()),
+            _ => panic!("Value out of bounds!"),
+        }
+    }
+
     pub fn get_u8(&self) -> u8 {
         match self {
             InnerData::INT(a) => *a as u8,

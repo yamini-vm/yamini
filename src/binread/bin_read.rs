@@ -24,6 +24,23 @@ fn read_file_line_by_line(filepath: &str) -> Result<Vec<u8>, Box<dyn std::error:
     Ok(file_bytes)
 }
 
+fn in_range_or_promote(data_arg: &String, range: &[u8],
+                       in_range_type: &str, out_range_type: &str) -> InnerData {
+    let mut value_bytes = Vec::new();
+
+    for ch in data_arg.chars() {
+        value_bytes.push(ch as u8);
+    }
+
+    let res = value_bytes.len() == range.len() && value_bytes.iter().zip(range).all(|(a, b)| a <= b);
+
+    if res {
+        InnerData::from(&data_arg, in_range_type)
+    } else {
+        InnerData::from(&data_arg, out_range_type)
+    }
+}
+
 pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     let mut buffer = Vec::new();
     match read_file_line_by_line(filepath) {
@@ -48,7 +65,7 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
     let mut object_instructions_with_end = HashMap::new();
     object_instructions_with_end.insert(12, 13); // 12 = STARTSTR, 13 = ENDSTR
 
-    let object_offsets = vec![3, 5];
+    let object_offsets = vec![2, 3]; // 2 = STACK_OFFSET, 3 = STACK_OFFSET_STR
 
     let mut program = Vec::new();
     let mut state = State::ReadInstruction;
@@ -115,17 +132,57 @@ pub fn read_from_file(filepath: &str) -> Vec<InstructionSet> {
             },
             State::ReadObject => {
                 let mut j = i + 2;
-                let mut string_arg = String::new();
+                let mut data_arg = String::new();
 
-                arg_stack.push(InnerData::INT(buffer[i] as i8));
+                let offset = buffer[i] as i8;
+                arg_stack.push(InnerData::INT(offset));
                 i += 1;
 
                 while buffer[j] != object_instructions_with_end[&buffer[i]] {
-                    string_arg.push(buffer[j] as char);
+                    data_arg.push(buffer[j] as char);
                     j += 1;
                 }
                 j += 1; // Skip ENDSTR
-                arg_stack.push(InnerData::STR(string_arg));
+
+                match offset {
+                    2 => {
+                        match data_arg.len() {
+                            1 | 2 => {
+                                arg_stack.push(InnerData::from(&data_arg, "INT"));
+                            },
+                            3 => {
+                                let range = vec![1, 2, 8];
+                                arg_stack.push(in_range_or_promote(&data_arg, &range, 
+                                                                   "INT", "INT16"));
+                            },
+                            4 => {
+                                arg_stack.push(InnerData::from(&data_arg, "INT16"));
+                            },
+                            5 => {
+                                let range = vec![3, 2, 7, 6, 7];
+                                arg_stack.push(in_range_or_promote(&data_arg, &range, 
+                                                                   "INT16", "INT32"));
+                            },
+                            6 | 7 | 8 | 9 => {
+                                arg_stack.push(InnerData::from(&data_arg, "INT32"));
+                            }
+                            10 => {
+                                let range = vec![2, 1, 4, 7, 4, 8, 3, 6, 4, 7];
+                                arg_stack.push(in_range_or_promote(&data_arg, &range, 
+                                                                   "INT32", "ERR"));
+                            }
+                            _ => {
+
+                            }
+                        }
+                    },
+                    3 => {
+                        arg_stack.push(InnerData::STR(data_arg));
+                    },
+                    _ => {
+                        panic!("Unknown object offset");
+                    }
+                }
 
                 i = j;
                 state = State::GenInstruction;
