@@ -4,7 +4,7 @@ use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
 use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
-use super::constants::{DATA_MEMORY_OFFSET_STR, ADDR_OFFSET, PTR_OFFSET};
+use super::constants::{ADDR_OFFSET, PTR_OFFSET};
 
 
 #[allow(dead_code)]
@@ -64,7 +64,7 @@ impl Processor {
                     stack.push(InnerData::INT(self.registers[value.get_u8() as usize]));
                 } else if offset == &STACK_OFFSET || offset == &STACK_OFFSET_STR {
                     stack.push(value.clone());
-                } else if offset == &DATA_MEMORY_OFFSET || offset == &DATA_MEMORY_OFFSET_STR {
+                } else if offset == &DATA_MEMORY_OFFSET {
                     stack.push(data_memory.get_var_value(value.get_u8()).clone());
                 } else if offset == &ADDR_OFFSET {
                     stack.push(InnerData::INT(value.get_u8() as i8 * 8));
