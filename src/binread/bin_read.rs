@@ -29,7 +29,7 @@ fn in_range_or_promote(data_arg: &String, range: &[u8],
     let mut value_bytes = Vec::new();
 
     for ch in data_arg.chars() {
-        value_bytes.push(ch as u8);
+        value_bytes.push(ch as u8 - '0' as u8);
     }
 
     let res = value_bytes.len() == range.len() && value_bytes.iter().zip(range).all(|(a, b)| a <= b);
