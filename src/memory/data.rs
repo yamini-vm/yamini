@@ -50,6 +50,15 @@ impl InnerData {
         }
     }
 
+    pub fn get_type(&self) -> &str {
+        match self {
+            InnerData::INT(_) => "i8",
+            InnerData::INT16(_) => "i16",
+            InnerData::INT32(_) => "i32",
+            InnerData::STR(_) => "str",
+        }
+    }
+
     pub fn clone(&self) -> InnerData {
         match self {
             InnerData::INT(a) => InnerData::INT(*a),
@@ -99,6 +108,10 @@ impl InnerData {
     }
 
     fn promote_or_not(self, other: Self) -> (InnerData, InnerData) {
+        if self.get_type() == "str" || other.get_type() == "str" {
+            return (self, other);
+        }
+
         let mut promoted_self = self;
         let mut promoted_other = other;
 
