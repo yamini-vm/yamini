@@ -162,6 +162,18 @@ impl InnerData {
             }
         }
     }
+
+    fn compute_or_promote_i32(a: i32, b: i32, checked_fn: &dyn Fn(i32, i32) -> Option<i32>,
+                             _op_fn: &dyn Fn(Self, Self) -> Self) -> InnerData {
+        let res = checked_fn(a, b);
+
+        match res {
+            Some(res) => InnerData::INT32(res),
+            None => {
+                panic!("Value out of bounds!");
+            }
+        }
+    }
 }
 
 impl Add for InnerData {
@@ -177,7 +189,9 @@ impl Add for InnerData {
             (InnerData::INT16(a), InnerData::INT16(b)) => {
                 InnerData::compute_or_promote_i16(a, b, &i16::checked_add, &Add::add)
             },
-            (InnerData::INT32(a), InnerData::INT32(b)) => InnerData::INT32(a + b),
+            (InnerData::INT32(a), InnerData::INT32(b)) => {
+                InnerData::compute_or_promote_i32(a, b, &i32::checked_add, &Add::add)
+            },
             (InnerData::STR(a), InnerData::STR(b)) => InnerData::STR(a + &b),
             _ => panic!("Illegal add operation"),
         }
@@ -197,7 +211,9 @@ impl Sub for InnerData {
             (InnerData::INT16(a), InnerData::INT16(b)) => {
                 InnerData::compute_or_promote_i16(a, b, &i16::checked_sub, &Sub::sub)
             },
-            (InnerData::INT32(a), InnerData::INT32(b)) => InnerData::INT32(a - b),
+            (InnerData::INT32(a), InnerData::INT32(b)) => {
+                InnerData::compute_or_promote_i32(a, b, &i32::checked_sub, &Sub::sub)
+            },
             _ => panic!("Illegal add operation"),
         }
     }
@@ -216,7 +232,9 @@ impl Mul for InnerData {
             (InnerData::INT16(a), InnerData::INT16(b)) => {
                 InnerData::compute_or_promote_i16(a, b, &i16::checked_mul, &Mul::mul)
             },
-            (InnerData::INT32(a), InnerData::INT32(b)) => InnerData::INT32(a * b),
+            (InnerData::INT32(a), InnerData::INT32(b)) => {
+                InnerData::compute_or_promote_i32(a, b, &i32::checked_mul, &Mul::mul)
+            },
             (InnerData::STR(a), InnerData::INT(b)) => {
                 let mut result = String::new();
                 for _ in 0..b {
@@ -249,7 +267,9 @@ impl Div for InnerData {
             (InnerData::INT16(a), InnerData::INT16(b)) => {
                 InnerData::compute_or_promote_i16(a, b, &i16::checked_div, &Div::div)
             },
-            (InnerData::INT32(a), InnerData::INT32(b)) => InnerData::INT32(a / b),
+            (InnerData::INT32(a), InnerData::INT32(b)) => {
+                InnerData::compute_or_promote_i32(a, b, &i32::checked_div, &Div::div)
+            },
             _ => panic!("Illegal div operation"),
         }
     }
@@ -268,7 +288,9 @@ impl Rem for InnerData {
             (InnerData::INT16(a), InnerData::INT16(b)) => {
                 InnerData::compute_or_promote_i16(a, b, &i16::checked_rem, &Rem::rem)
             },
-            (InnerData::INT32(a), InnerData::INT32(b)) => InnerData::INT32(a % b),
+            (InnerData::INT32(a), InnerData::INT32(b)) => {
+                InnerData::compute_or_promote_i32(a, b, &i32::checked_rem, &Rem::rem)
+            },
             _ => panic!("Illegal rem operation"),
         }
     }
