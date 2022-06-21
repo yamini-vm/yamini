@@ -1,5 +1,6 @@
 use crate::memory::InnerData;
 
+#[derive(Debug)]
 pub struct Stack {
     pub data: Vec<InnerData>,
     pub head: usize,

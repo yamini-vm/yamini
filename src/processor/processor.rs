@@ -1,10 +1,14 @@
-use std::io;
+extern crate serde_json;
+
+use std::collections::HashMap;
+use std::{io, fs, path, collections};
 use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
 
 use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
 use super::constants::{ADDR_OFFSET, PTR_OFFSET};
+use super::constants::{DEBUG_DIR, DEBUGGING_JSON_FILE};
 
 
 #[allow(dead_code)]
@@ -40,20 +44,34 @@ pub struct Processor {
     pc: usize,
     registers: [i8; 10],
     flag_register: FlagRegister,
+    debug: bool,
+    debug_vec: Vec<collections::HashMap<String, String>>,
 }
 
 impl Processor {
-    pub fn new() -> Processor {
+    pub fn new(debug: bool) -> Processor {
         Processor {
             pc: 0,
             registers: [0; 10],
             flag_register: FlagRegister::new(),
+            debug: debug,
+            debug_vec: Vec::new(),
         }
     }
 
     pub fn execute(&mut self, instruction: &InstructionSet, data_memory: &mut DataMemory,
                    stack: &mut Stack, call_stack: &mut Stack,
                    stdout: &mut dyn io::Write) {
+        let mut instruction_map = HashMap::new();
+        if self.debug {
+            instruction_map.insert("instruction".to_string(), format!("{:?}", instruction));
+            instruction_map.insert("b_pc".to_string(), self.pc.to_string());
+            instruction_map.insert("b_registers".to_string(), format!("{:?}", self.registers));
+            instruction_map.insert("b_data_memory".to_string(), format!("{:?}", data_memory.data));
+            instruction_map.insert("b_stack".to_string(), format!("{:?}", stack));
+            instruction_map.insert("b_call_stack".to_string(), format!("{:?}", call_stack));
+        }
+
         match instruction {
             InstructionSet::LOAD(value, offset) => {
                 if offset == &REGISTER_OFFSET {
@@ -259,11 +277,35 @@ impl Processor {
                 _ => {},
             }
         }
+
+        if self.debug {
+            instruction_map.insert("a_pc".to_string(), self.pc.to_string());
+            instruction_map.insert("a_registers".to_string(), format!("{:?}", self.registers));
+            instruction_map.insert("a_data_memory".to_string(), format!("{:?}", data_memory.data));
+            instruction_map.insert("a_stack".to_string(), format!("{:?}", stack));
+            instruction_map.insert("a_call_stack".to_string(), format!("{:?}", call_stack));
+
+            self.debug_vec.push(instruction_map);
+        }
     }
 
     pub fn execute_program(&mut self, program_memory: ProgramMemory, data_memory: &mut DataMemory,
                            stack: &mut Stack, call_stack: &mut Stack,
                            stdout: &mut dyn io::Write) {
+        if self.debug {
+            match fs::create_dir_all(DEBUG_DIR) {
+                Ok(_) => {
+                    let debug_file_path = path::Path::new(DEBUG_DIR).join(DEBUGGING_JSON_FILE);
+
+                    match fs::File::create(debug_file_path) {
+                        Ok(_) => (),
+                        Err(error) => panic!("Could not create file: {}", error),
+                    }
+                },
+                Err(error) => panic!("Could not create directory: {}", error),
+            }
+        }
+
         loop {
             let instruction = program_memory.get_instruction(self.pc);
             self.execute(instruction, data_memory, stack, call_stack, stdout);
@@ -274,5 +316,15 @@ impl Processor {
                 break;
             }
         }   
+
+        if self.debug {
+            let json = serde_json::to_string_pretty(&self.debug_vec).unwrap();
+
+            let debug_file_path = path::Path::new(DEBUG_DIR).join(DEBUGGING_JSON_FILE);
+            match fs::write(debug_file_path, json) {
+                Ok(_) => (),
+                Err(error) => panic!("Could not write to file: {}", error),
+            }
+        }
     }
 }

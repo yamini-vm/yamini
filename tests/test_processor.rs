@@ -7,7 +7,7 @@ use yamini::instructions::InstructionSet;
 fn test_execute_load() {
     let mut stack = Stack::new();
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::LOAD(InnerData::INT(3), 2),
@@ -27,7 +27,7 @@ fn test_execute_add() {
     stack.push(InnerData::INT(3));
     stack.push(InnerData::INT(4));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::ADD, 
@@ -47,7 +47,7 @@ fn test_execute_sub() {
     stack.push(InnerData::INT(3));
     stack.push(InnerData::INT(4));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::SUB, 
@@ -67,7 +67,7 @@ fn test_execute_mul() {
     stack.push(InnerData::INT(3));
     stack.push(InnerData::INT(4));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::MUL, 
@@ -87,7 +87,7 @@ fn test_execute_div() {
     stack.push(InnerData::INT(12));
     stack.push(InnerData::INT(4));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::DIV, 
@@ -106,7 +106,7 @@ fn test_execute_halt() {
     let mut stack = Stack::new();
     stack.push(InnerData::INT(3));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     let mut stdout = Vec::new();
 
@@ -128,7 +128,7 @@ fn test_execute_mod() {
     stack.push(InnerData::INT(12));
     stack.push(InnerData::INT(5));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::DIV,
@@ -145,7 +145,7 @@ fn test_execute_mod() {
 #[test]
 fn test_execute_loadlabel() {
     let mut stack = Stack::new();
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::LABEL,
@@ -162,7 +162,7 @@ fn test_execute_loadlabel() {
 #[test]
 fn test_execute_jmp() {
     let mut stack = Stack::new();
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::JMP(InnerData::INT(2)),
@@ -181,7 +181,7 @@ fn test_execute_neg() {
     let mut stack = Stack::new();
     stack.push(InnerData::INT(3));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::NEG,
@@ -198,7 +198,7 @@ fn test_execute_neg() {
 #[test]
 fn test_execute_popregister() {
     let mut stack = Stack::new();
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::LOAD(InnerData::INT(2), 1), 
@@ -223,7 +223,7 @@ fn test_execute_popregister() {
 #[test]
 fn test_execute_jz() {
     let mut stack = Stack::new();
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::JZ(InnerData::INT(2)),
@@ -240,7 +240,7 @@ fn test_execute_jz() {
 #[test]
 fn test_execute_jn() {
     let mut stack = Stack::new();
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::JN(InnerData::INT(2)), 
@@ -259,7 +259,7 @@ fn test_execute_show() {
     let mut stack = Stack::new();
     stack.push(InnerData::INT(3));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     let mut stdout = Vec::new();
 
@@ -281,7 +281,7 @@ fn test_execute_show() {
 fn test_execute_ret() {
     let mut stack = Stack::new();
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     let mut stdout = Vec::new();
 
@@ -301,7 +301,7 @@ fn test_execute_ret() {
 fn test_execute_call() {
     let mut stack = Stack::new();
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     let mut stdout = Vec::new();
 
@@ -323,7 +323,7 @@ fn test_execute_equ() {
     stack.push(InnerData::INT(3));
     stack.push(InnerData::INT(3));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::EQU,
@@ -342,7 +342,7 @@ fn test_execute_deref() {
     let mut stack = Stack::new();
     stack.push(InnerData::INT(3));
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     processor.execute(
         &InstructionSet::DEREF,
@@ -370,7 +370,7 @@ fn test_execute_program() {
     let mut memory = ProgramMemory::new();
     memory.load_program(program);
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(false);
 
     let mut stdout = Vec::new();
 

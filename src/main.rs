@@ -16,11 +16,14 @@ fn main() {
                         true, None, ArgumentType::STR);
     parser.add_argument("-i", "--instructions", "Flag to print compiled instructions",
                         false, Some(InnerData::BOOL(false)), ArgumentType::BOOL);
+    parser.add_argument("-d", "--debug", "Run in debug mode", 
+                        false, Some(InnerData::BOOL(false)), ArgumentType::BOOL);
 
     let args = parser.parse_args().unwrap();
 
     let filepath = &args.get("file_path").unwrap().get_str();
     let instructions_flag = args.get("instructions").unwrap().get_bool();
+    let debug_flag = args.get("debug").unwrap().get_bool();
 
     let program = read_from_file(filepath);
 
@@ -41,6 +44,6 @@ fn main() {
 
     let mut data_memory = DataMemory::new();
 
-    let mut processor = Processor::new();
+    let mut processor = Processor::new(debug_flag);
     processor.execute_program(program_memory, &mut data_memory, &mut stack, &mut call_stack, &mut io::stdout());
 }
