@@ -50,6 +50,8 @@ enum JsonValue {
     STACK { data: Vec<InnerData>, head: usize },
     MAP(HashMap<u8, InnerData>),
     FLAGREGISTER(FlagRegister),
+    INSTRUCTION { instruction: String, arg: String },
+    VECTOR(Vec<JsonValue>),
 }
 
 #[allow(dead_code)]
@@ -72,6 +74,19 @@ impl Processor {
         }
     }
 
+    fn get_stack_instruction(&self, stack: &Stack, instruction: &str) -> JsonValue {
+        let arg = match instruction {
+            "PUSH" => stack.top().to_string(),
+            "POP" => "".to_string(),
+            _ => "".to_string(),
+        };
+
+       JsonValue::INSTRUCTION { 
+            instruction: instruction.to_string(), 
+            arg,
+        }
+    }
+
     pub fn execute(&mut self, instruction: &InstructionSet, data_memory: &mut DataMemory,
                    stack: &mut Stack, call_stack: &mut Stack,
                    stdout: &mut dyn io::Write) {
@@ -82,8 +97,6 @@ impl Processor {
             instruction_map.insert("pc".to_string(), JsonValue::NUMBER(self.pc as i64));
             instruction_map.insert("b_registers".to_string(), JsonValue::ARRAY(self.registers));
             instruction_map.insert("b_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
-            instruction_map.insert("b_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
-            instruction_map.insert("b_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
             instruction_map.insert("b_flag_register".to_string(), JsonValue::FLAGREGISTER(self.flag_register.clone()));
         }
 
@@ -296,9 +309,39 @@ impl Processor {
         if self.debug {
             instruction_map.insert("a_registers".to_string(), JsonValue::ARRAY(self.registers));
             instruction_map.insert("a_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
-            instruction_map.insert("a_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
-            instruction_map.insert("a_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
             instruction_map.insert("a_flag_register".to_string(), JsonValue::FLAGREGISTER(self.flag_register.clone()));
+
+            let mut stack_instructions = Vec::new();
+            let mut call_stack_instructions = Vec::new();
+
+            match instruction {
+                InstructionSet::LOAD(_, _) => {
+                    stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
+                },
+                InstructionSet::ADD | InstructionSet::SUB | InstructionSet::MUL |
+                InstructionSet::DIV | InstructionSet::MOD | InstructionSet::EQU => {
+                    stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                }
+                InstructionSet::SHOW | InstructionSet::POP(_, _) => {
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                }
+                InstructionSet::NEG | InstructionSet::DEREF => {
+                    stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                }
+
+                InstructionSet::CALL(_) => {
+                    call_stack_instructions.push(self.get_stack_instruction(call_stack, "PUSH"));
+                }
+                InstructionSet::RET => {
+                    call_stack_instructions.push(self.get_stack_instruction(call_stack, "POP"));
+                }
+                _ => {},
+            }
+            instruction_map.insert("stack".to_string(), JsonValue::VECTOR(stack_instructions));
+            instruction_map.insert("call_stack".to_string(), JsonValue::VECTOR(call_stack_instructions));
 
             self.debug_vec.push(instruction_map);
         }
