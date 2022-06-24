@@ -13,6 +13,7 @@ use super::constants::{ADDR_OFFSET, PTR_OFFSET};
 use super::constants::{DEBUG_DIR, DEBUGGING_JSON_FILE};
 
 
+#[derive(Serialize, Deserialize, Clone)]
 #[allow(dead_code)]
 struct FlagRegister {
     zero: bool,
@@ -48,6 +49,7 @@ enum JsonValue {
     ARRAY([i8; 10]),
     STACK { data: Vec<InnerData>, head: usize },
     MAP(HashMap<u8, InnerData>),
+    FLAGREGISTER(FlagRegister),
 }
 
 #[allow(dead_code)]
@@ -82,6 +84,7 @@ impl Processor {
             instruction_map.insert("b_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
             instruction_map.insert("b_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
             instruction_map.insert("b_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
+            instruction_map.insert("b_flag_register".to_string(), JsonValue::FLAGREGISTER(self.flag_register.clone()));
         }
 
         match instruction {
@@ -295,6 +298,7 @@ impl Processor {
             instruction_map.insert("a_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
             instruction_map.insert("a_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
             instruction_map.insert("a_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
+            instruction_map.insert("a_flag_register".to_string(), JsonValue::FLAGREGISTER(self.flag_register.clone()));
 
             self.debug_vec.push(instruction_map);
         }
