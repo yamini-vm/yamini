@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::memory::InnerData;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DataMemory {
     pub data: HashMap<u8, InnerData>,
 }

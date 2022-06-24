@@ -1,7 +1,11 @@
+extern crate serde;
+
 use std::ops::{Add, Sub, Mul, Div, Rem};
 use std::fmt::{Display, self};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(untagged)]
 pub enum InnerData {
     INT(i8),
     INT16(i16),

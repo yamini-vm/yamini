@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 sargparse = "~0.2.2"
 serde_json = "1.0.81"
+serde = { version = "1.0.137", features = ["derive"] }

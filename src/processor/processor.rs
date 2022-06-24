@@ -1,10 +1,12 @@
 extern crate serde_json;
+extern crate serde;
 
 use std::collections::HashMap;
 use std::{io, fs, path, collections};
 use crate::instructions::InstructionSet;
 use crate::memory::stack::Stack;
 use crate::memory::{ProgramMemory, DataMemory, InnerData};
+use serde::{Serialize, Deserialize};
 
 use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
 use super::constants::{ADDR_OFFSET, PTR_OFFSET};
@@ -38,6 +40,15 @@ impl FlagRegister {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum JsonValue {
+    STRING(String),
+    NUMBER(i64),
+    ARRAY([i8; 10]),
+    STACK { data: Vec<InnerData>, head: usize },
+    MAP(HashMap<u8, InnerData>),
+}
 
 #[allow(dead_code)]
 pub struct Processor {
@@ -45,7 +56,7 @@ pub struct Processor {
     registers: [i8; 10],
     flag_register: FlagRegister,
     debug: bool,
-    debug_vec: Vec<collections::HashMap<String, String>>,
+    debug_vec: Vec<collections::HashMap<String, JsonValue>>,
 }
 
 impl Processor {
@@ -54,7 +65,7 @@ impl Processor {
             pc: 0,
             registers: [0; 10],
             flag_register: FlagRegister::new(),
-            debug: debug,
+            debug,
             debug_vec: Vec::new(),
         }
     }
@@ -64,12 +75,13 @@ impl Processor {
                    stdout: &mut dyn io::Write) {
         let mut instruction_map = HashMap::new();
         if self.debug {
-            instruction_map.insert("instruction".to_string(), format!("{:?}", instruction));
-            instruction_map.insert("b_pc".to_string(), self.pc.to_string());
-            instruction_map.insert("b_registers".to_string(), format!("{:?}", self.registers));
-            instruction_map.insert("b_data_memory".to_string(), format!("{:?}", data_memory.data));
-            instruction_map.insert("b_stack".to_string(), format!("{:?}", stack));
-            instruction_map.insert("b_call_stack".to_string(), format!("{:?}", call_stack));
+            instruction_map.insert("instruction".to_string(), 
+                                   JsonValue::STRING(format!("{:?}", instruction)));
+            instruction_map.insert("pc".to_string(), JsonValue::NUMBER(self.pc as i64));
+            instruction_map.insert("b_registers".to_string(), JsonValue::ARRAY(self.registers));
+            instruction_map.insert("b_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
+            instruction_map.insert("b_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
+            instruction_map.insert("b_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
         }
 
         match instruction {
@@ -279,11 +291,10 @@ impl Processor {
         }
 
         if self.debug {
-            instruction_map.insert("a_pc".to_string(), self.pc.to_string());
-            instruction_map.insert("a_registers".to_string(), format!("{:?}", self.registers));
-            instruction_map.insert("a_data_memory".to_string(), format!("{:?}", data_memory.data));
-            instruction_map.insert("a_stack".to_string(), format!("{:?}", stack));
-            instruction_map.insert("a_call_stack".to_string(), format!("{:?}", call_stack));
+            instruction_map.insert("a_registers".to_string(), JsonValue::ARRAY(self.registers));
+            instruction_map.insert("a_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
+            instruction_map.insert("a_stack".to_string(), JsonValue::STACK { data: stack.data.clone(), head: stack.head });
+            instruction_map.insert("a_call_stack".to_string(), JsonValue::STACK { data: call_stack.data.clone(), head: call_stack.head });
 
             self.debug_vec.push(instruction_map);
         }
