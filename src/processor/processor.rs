@@ -92,6 +92,7 @@ impl Processor {
                    stdout: &mut dyn io::Write) {
         let mut instruction_map = HashMap::new();
         if self.debug {
+            instruction_map.insert("instruction".to_string(), JsonValue::STRING(format!("{:?}", instruction)));
             instruction_map.insert("pc".to_string(), JsonValue::NUMBER(self.pc as i64));
             instruction_map.insert("b_registers".to_string(), JsonValue::ARRAY(self.registers));
             instruction_map.insert("b_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
