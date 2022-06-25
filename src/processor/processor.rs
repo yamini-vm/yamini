@@ -10,7 +10,7 @@ use serde::{Serialize, Deserialize};
 
 use super::constants::{REGISTER_OFFSET, STACK_OFFSET, STACK_OFFSET_STR, DATA_MEMORY_OFFSET};
 use super::constants::{ADDR_OFFSET, PTR_OFFSET};
-use super::constants::{DEBUG_DIR, DEBUGGING_JSON_FILE};
+use super::constants::{DEBUG_DIR, DEBUGGING_JSON_FILE, CODE_LINES_JSON_FILE};
 
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -92,8 +92,6 @@ impl Processor {
                    stdout: &mut dyn io::Write) {
         let mut instruction_map = HashMap::new();
         if self.debug {
-            instruction_map.insert("instruction".to_string(), 
-                                   JsonValue::STRING(format!("{:?}", instruction)));
             instruction_map.insert("pc".to_string(), JsonValue::NUMBER(self.pc as i64));
             instruction_map.insert("b_registers".to_string(), JsonValue::ARRAY(self.registers));
             instruction_map.insert("b_data_memory".to_string(), JsonValue::MAP(data_memory.data.clone()));
@@ -361,6 +359,19 @@ impl Processor {
                     }
                 },
                 Err(error) => panic!("Could not create directory: {}", error),
+            }
+
+            let mut code_lines = Vec::new();
+            for instruction in &program_memory.program {
+                code_lines.push(format!("{:?}", instruction));
+            }
+
+            let json = serde_json::to_string_pretty(&code_lines).unwrap();
+
+            let code_lines_path = path::Path::new(DEBUG_DIR).join(CODE_LINES_JSON_FILE);
+            match fs::write(code_lines_path, json) {
+                Ok(_) => (),
+                Err(error) => panic!("Could not write to file: {}", error),
             }
         }
 

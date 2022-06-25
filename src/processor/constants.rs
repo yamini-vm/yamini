@@ -7,3 +7,4 @@ pub(super) const PTR_OFFSET: u8 = 6;
 
 pub(super) const DEBUG_DIR: &str = "./debug";
 pub(super) const DEBUGGING_JSON_FILE: &str = "debugging.json";
+pub(super) const CODE_LINES_JSON_FILE: &str = "code_lines.json";
