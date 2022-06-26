@@ -319,16 +319,16 @@ impl Processor {
                 },
                 InstructionSet::ADD | InstructionSet::SUB | InstructionSet::MUL |
                 InstructionSet::DIV | InstructionSet::MOD | InstructionSet::EQU => {
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
                     stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
-                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
-                    stack_instructions.push(self.get_stack_instruction(stack, "POP"));
                 }
                 InstructionSet::SHOW | InstructionSet::POP(_, _) => {
                     stack_instructions.push(self.get_stack_instruction(stack, "POP"));
                 }
                 InstructionSet::NEG | InstructionSet::DEREF => {
-                    stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
                     stack_instructions.push(self.get_stack_instruction(stack, "POP"));
+                    stack_instructions.push(self.get_stack_instruction(stack, "PUSH"));
                 }
 
                 InstructionSet::CALL(_) => {
